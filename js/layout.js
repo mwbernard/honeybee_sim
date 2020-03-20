@@ -1,10 +1,15 @@
 let colBgGreen; // #EDFFF7
+let colSection;
 let bgBeehiveImg;
 
 // ------------------------------------------------------
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
+
+  // colors
   colBgGreen = color(237, 255, 247);
+  colSection = color(207, 246, 229);
+
   bgBeehiveImg = loadImage('../assets/bg-hive.svg');
 }
 
@@ -29,12 +34,16 @@ function drawCentralBeehive() {
 
 // ------------------------------------------------------
 function drawFoodMap() {
-
+  noStroke();
+  fill(colSection);
+  rect(15, height - 415, 995, 400);
 }
 
 // ------------------------------------------------------
 function drawDanceInfo() {
-
+  noStroke();
+  fill(colSection);
+  rect(1025, height - 415, 400, 400);
 }
 
 // ------------------------------------------------------
