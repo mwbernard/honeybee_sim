@@ -1,17 +1,19 @@
-
+let beeImage;
+let hiveImage;
+let foodImage;
 
 function setup() {
-  // put setup code here
+
   createCanvas(600,600);
-  beePop = 10;
-  bees = [];
-  foodSources = [];
+  beePop = 10; // number of bees
+  bees = []; // global list of bees
+  foodSources = []; // global list of food sources
 
-  hive = new Hive();
+  hive = new Hive(); // hive
 
-  for (let i = 0; i < beePop; i++) {
+  for (let i = 0; i < beePop; i++) {  // initialize all the bees
     var beeType;
-    if (random(10) < 5) {
+    if (random(10) < 5) { // how many bees are explorers vs drones
       beeType = 1; //explorer
     } else {
       beeType = 0; //drone
@@ -25,25 +27,32 @@ function draw() {
 
   background(0,150,0);
 
+  //draws hive and food
   hive.display();
   drawFoodSources();
 
+  // checks to make sure each bee's target actually exists
   verify_targets(bees,foodSources,hive.knownFood);
+  // checks if bees are running into food
   check_food_collisions(bees,foodSources);
 
   for (let i = 0; i < beePop; i++) {
     let bee = bees[i];
 
+    // update and display each bee
     bee.update();
     bee.display();
 
+    // checks if bees are over the hive
     if (bee.check_hive_collision()) {
+      // if the bee is returning with pollen
       if (bee.full) {
         hive.addPollen();
         hive.knownFood.push(bee.foundFoodSource);
         bee.full = false;
         bee.foundFoodSource = null;
       }
+      // otherwise give the bee a new target to go to (as if they watched a dance)
       if (hive.knownFood[0]) {
         let rand = int(random(hive.knownFood.length - 1));
         bee.setTarget(hive.knownFood[rand].x, hive.knownFood[rand].y);
@@ -57,11 +66,17 @@ function draw() {
 
 // FUNCTIONS --------------------------------------------------------------
 
+function preload() {
+  beeImage = loadImage('./icon-bee.png');
+  hiveImage = loadImage('./icon-hive.png');
+  foodImage = loadImage('./icon-flower.png');
+}
+// double checks whether each bee's target is real
 function verify_targets(bees,foods,hive_food) {
   for (let i = 0; i < bees.length; i++) {
     if(bees[i].target != null) {
       if(findObjectByKey(foods, "id", bees[i].target.x * bees[i].target.y) == null && bees[i].full == false) {
-        print("item cleared");
+        //print("item cleared");
         hive_food.splice(findObjectByKey(hive_food, "x", bees[i].target.x));
         bees[i].target = null;
       }
@@ -69,6 +84,7 @@ function verify_targets(bees,foods,hive_food) {
   }
 }
 
+// checks if each bee is hitting food currently
 function check_food_collisions(some_bees, some_food) {
 
   for (let j = 0; j < some_bees.length; j++) {
@@ -80,30 +96,22 @@ function check_food_collisions(some_bees, some_food) {
         some_bees[j].foundFoodSource = some_food[i].pos;
       }
       if(some_food[i].pollen == 0) {
-        print("hi");
+        //print("hi");
         some_food.splice(i,1);
       }
     }
   }
 }
 
-
+// adds food on mouse click
 function mousePressed() {
 
-  if (abs(hive.pos.x - mouseX) < 20 && abs(hive.pos.y - mouseY) < 20) {
-    bee.setTarget(hive.pos.x, hive.pos.y);
-  } else {
-    foodSources.push(new FoodSource(mouseX,mouseY));
-    print(foodSources);
-  }
+  foodSources.push(new FoodSource(mouseX,mouseY));
+  print(foodSources);
+
   return false;
 }
 
-function keyPressed() {
-  if (keyCode === 'c') {
-    bee.target = null;
-  }
-}
 
 function drawFoodSources() {
 
@@ -135,11 +143,10 @@ class Hive {
     applyMatrix();
     rectMode(CENTER);
     noStroke();
-    fill(255);
     translate(this.pos.x, this.pos.y);
-    rect(0, 0, 50,50);
-    fill(0);
-    ellipse(0,0,this.pollenLevel,this.pollenLevel);
+    image(hiveImage,-50,-50,100,100);
+    fill(218,165,32);
+    rect(0,50,this.pollenLevel,10);
     resetMatrix();
   }
 
@@ -158,9 +165,14 @@ class FoodSource {
   display() {
     applyMatrix();
     noStroke();
+    rectMode(CENTER);
     fill(255,0,0);
     translate(this.pos.x, this.pos.y);
-    ellipse(0, 0, this.pollen, this.pollen);
+    image(foodImage,-25,-25,50,50);
+
+    if(this.pollen < 20){
+      rect(0, 20, this.pollen, 5);
+    }
     resetMatrix();
   }
 
@@ -218,14 +230,14 @@ class Honeybee {
   display() {
 
     applyMatrix();
-    rectMode(CENTER);
+    //rectMode(CENTER);
     noStroke();
     fill(255,255,0);
     translate(this.pos.x, this.pos.y);
-    rotate(this.vel.heading());
+    rotate(this.vel.heading() + PI/2);
 
     //draw bee
-    ellipse(0, 0, 20,5);
+    image(beeImage,-10,-10,20,20);
 
     resetMatrix();
   }
