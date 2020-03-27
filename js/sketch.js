@@ -1,4 +1,5 @@
 let colBgGreen;
+let colBlue;
 let colSection;
 
 let foodMap;
@@ -10,6 +11,8 @@ let beeImage;
 let hiveImage;
 let foodImage;
 
+let inconsolata;
+
 
 // ------------------------------------------------------
 function preload() {
@@ -17,20 +20,25 @@ function preload() {
   hiveImage    = loadImage('../assets/icon-hive.png');
   foodImage    = loadImage('../assets/icon-flower.png');
   bgBeehiveImg = loadImage('../assets/bg-hive.svg');
+  inconsolata  = loadFont('../assets/inconsolata.ttf');
 }
 
 // ------------------------------------------------------
 function setup() {
 
   createCanvas(window.innerWidth, window.innerHeight);
-
+  
+  // font
+  textFont(inconsolata);
+  
   // colors
   colBgGreen = color(237, 255, 247);
   colSection = color(207, 246, 229);
+  colBlue = color(58, 25, 255);
 
   margin = 15;
   foodMap = new FoodMap(995, 400);
-  centralBeehive = new CentralBeehive(3, bgBeehiveImg);
+  centralBeehive = new CentralBeehive(20, bgBeehiveImg);
   centralBeehive.setupBees();
 }
 
@@ -41,6 +49,7 @@ function draw() {
   drawCentralBeehive();
   drawFoodMap();
   drawDanceInfo();
+  showLabels();
 
   // Maybe this can move into the CentralBeehive class? Not sure
   for (let i = 0; i < centralBeehive.centralHoneybees.length; i++) {
@@ -48,6 +57,18 @@ function draw() {
       centralBeehive.centralHoneybees[i].handleHover();
     }
   }
+  
+
+}
+
+
+// ------------------------------------------------------
+function showLabels() {
+  textSize(22);
+  fill(colBlue);
+  text('CENTRAL BEEHIVE', 30, 45);
+  text('FOOD MAP', 30, height/2 + 80);
+  text('DANCE INFO', width - 400 - margin + 18, height/2 + 80);
 }
 
 
@@ -221,7 +242,7 @@ class CentralHoneybee {
     let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
     if (d < 20) {
       noFill();
-      stroke(58, 25, 255);
+      stroke(colBlue);
       strokeWeight(4);
       fill(0, 255, 195);
       circle(this.pos.x, this.pos.y, 45);
