@@ -10,24 +10,30 @@ let bgBeehiveImg;
 let beeImage;
 let hiveImage;
 let foodImage;
+let figureEightImage;
+let figureEightImageElem;
 
 let inconsolata;
 
 
 // ------------------------------------------------------
 function preload() {
-  beeImage     = loadImage('../assets/icon-bee.png');
-  hiveImage    = loadImage('../assets/icon-hive.png');
-  foodImage    = loadImage('../assets/icon-flower.png');
-  bgBeehiveImg = loadImage('../assets/bg-hive.svg');
-  inconsolata  = loadFont('../assets/inconsolata.ttf');
+  beeImage         = loadImage('../assets/icon-bee.png');
+  hiveImage        = loadImage('../assets/icon-hive.png');
+  foodImage        = loadImage('../assets/icon-flower.png');
+  bgBeehiveImg     = loadImage('../assets/bg-hive.svg');
+  figureEightImage = createImg('../assets/figure-8.gif', 'figure-8');
+  inconsolata      = loadFont('../assets/inconsolata.ttf');
+  figureEightImage.id('figure-8');
 }
 
 // ------------------------------------------------------
 function setup() {
 
   createCanvas(window.innerWidth, window.innerHeight);
-  
+  figureEightImageElem = document.getElementById('figure-8');
+  console.log(figureEightImageElem);
+
   // font
   textFont(inconsolata);
   
@@ -50,6 +56,7 @@ function draw() {
   drawFoodMap();
   drawDanceInfo();
   showLabels();
+  figureEightImageElem.style.display = 'none';
 
   // Maybe this can move into the CentralBeehive class? Not sure
   for (let i = 0; i < centralBeehive.centralHoneybees.length; i++) {
@@ -74,8 +81,8 @@ function showLabels() {
   strokeWeight(0);
   textSize(18);
   fill(0);
-  text("FOOD DISTANCE FROM HIVE:", width - 400 - margin + 18, height/2 + 240);
-  text("ANGLE:", width - 400 - margin + 18, height/2 + 340);
+  text("FOOD DISTANCE FROM HIVE:", width - 400 - margin + 18, height/2 + 290);
+  text("ANGLE:", width - 400 - margin + 18, height/2 + 375);
 }
 
 
@@ -265,8 +272,10 @@ class CentralHoneybee {
     strokeWeight(0);
     textSize(38);
     fill(colBlue);
-    text(this.distanceFromFood + " miles", width - 400 - margin + 18, height/2 + 280)
-    text(this.randomAngleFromSun + " degrees", width - 400 - margin + 18, height/2 + 380);
+    figureEightImageElem.style.display = 'block';
+    figureEightImage.position(width - 400 - margin + 18, height/2 + 100);
+    text(this.distanceFromFood + " miles", width - 400 - margin + 18, height/2 + 330)
+    text(this.randomAngleFromSun + " degrees", width - 400 - margin + 18, height/2 + 415);
   }
 
 }
