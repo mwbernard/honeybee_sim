@@ -221,9 +221,11 @@ class CentralHoneybee {
     let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
     if (d < 20) {
       noFill();
-      stroke(0);
-      strokeWeight(1);
-      circle(this.pos.x, this.pos.y, 40);
+      stroke(58, 25, 255);
+      strokeWeight(4);
+      fill(0, 255, 195);
+      circle(this.pos.x, this.pos.y, 45);
+      this.display();
     }
   }
 
