@@ -41,8 +41,14 @@ function draw() {
   drawCentralBeehive();
   drawFoodMap();
   drawDanceInfo();
-}
 
+  // Maybe this can move into the CentralBeehive class? Not sure
+  for (let i = 0; i < centralBeehive.centralHoneybees.length; i++) {
+    if (centralBeehive.centralHoneybees[i].contains(mouseX, mouseY)) {
+      centralBeehive.centralHoneybees[i].handleHover();
+    }
+  }
+}
 
 
 // ------------------------------------------------------
@@ -71,7 +77,7 @@ function drawDanceInfo() {
 
 // ------------------------------------------------------
 // double checks whether each bee's target is real
-function verify_targets(bees,foods,hive_food) {
+function verify_targets(bees, foods, hive_food) {
   for (let i = 0; i < bees.length; i++) {
     if (bees[i].target != null) {
       if (findObjectByKey(foods, "id", bees[i].target.x * bees[i].target.y) == null && bees[i].full == false) {
@@ -128,7 +134,7 @@ function drawFoodSources() {
 function findObjectByKey(array, key, value) {
   for (var i = 0; i < array.length; i++) {
     if (array[i][key] === value) {
-        return array[i];
+      return array[i];
     }
   }
   return null;
@@ -187,17 +193,40 @@ class CentralBeehive {
 
 // ------------------------------------------------------
 class CentralHoneybee {
+
   constructor(boundingLeftRight, boundingTopBottom) {
     this.pos = createVector(
       random((width/2 - boundingLeftRight) + 60, width/2 + (boundingLeftRight - 60)),
       random(60, (boundingTopBottom * 2) - 60)
     );
+    this.rotAmt = random(PI/2);
   }
 
-  display() {
-    fill(0);
-    circle(this.pos.x, this.pos.y, 20);
+  // ------------------------------------------------------
+  contains(mx, my) {
+    return dist(mx, my, this.pos.x, this.pos.y) < 20;
   }
+
+  // ------------------------------------------------------
+  display() {
+    push();
+    translate(this.pos.x, this.pos.y);
+    rotate(this.rotAmt);
+    image(beeImage, 0, 0, 40, 40);
+    pop();
+  }
+
+  // ------------------------------------------------------
+  handleHover() {
+    let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
+    if (d < 20) {
+      noFill();
+      stroke(0);
+      strokeWeight(1);
+      circle(this.pos.x, this.pos.y, 40);
+    }
+  }
+
 }
 
 
@@ -418,7 +447,7 @@ class Honeybee {
     rotate(this.vel.heading() + PI/2);
 
     // draw bee
-    image(beeImage,0,0,20,20);
+    image(beeImage, 0, 0, 20, 20);
 
     resetMatrix();
   }
