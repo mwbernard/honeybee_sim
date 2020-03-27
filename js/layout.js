@@ -74,11 +74,10 @@ class FoodMap {
     this.height = boundingHeight;
 
     // Instantiate new bee(s)
-    // top left     : margin, height - (this.height + margin)
-    // bottom right : this.width + margin, height - (this.height + margin)
+    // Constrain bee position and movement inside of FoodMap bounding box
     this.bee = new Honeybee(
       createVector(margin, height - (this.height + margin)),
-      createVector(this.width + margin, height -  margin) 
+      createVector(this.width + margin, height - margin)
     );
   }
 
@@ -133,7 +132,7 @@ class Honeybee {
 
   display() {
     push();
-    
+
     rectMode(CENTER);
     noStroke();
     fill(20, 20, 20);
