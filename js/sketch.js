@@ -68,7 +68,14 @@ function showLabels() {
   fill(colBlue);
   text('CENTRAL BEEHIVE', 30, 45);
   text('FOOD MAP', 30, height/2 + 80);
+
+  // SUPER CHEATING
   text('DANCE INFO', width - 400 - margin + 18, height/2 + 80);
+  strokeWeight(0);
+  textSize(18);
+  fill(0);
+  text("FOOD DISTANCE FROM HIVE:", width - 400 - margin + 18, height/2 + 240);
+  text("ANGLE:", width - 400 - margin + 18, height/2 + 340);
 }
 
 
@@ -221,6 +228,8 @@ class CentralHoneybee {
       random(60, (boundingTopBottom * 2) - 60)
     );
     this.rotAmt = random(PI/2);
+    this.distanceFromFood = random(0, 5).toFixed(1);
+    this.randomAngleFromSun = random(0, 180).toFixed(0);
   }
 
   // ------------------------------------------------------
@@ -247,7 +256,17 @@ class CentralHoneybee {
       fill(0, 255, 195);
       circle(this.pos.x, this.pos.y, 45);
       this.display();
+      this.showDanceInfoText();
     }
+  }
+
+  // ------------------------------------------------------
+  showDanceInfoText() {
+    strokeWeight(0);
+    textSize(38);
+    fill(colBlue);
+    text(this.distanceFromFood + " miles", width - 400 - margin + 18, height/2 + 280)
+    text(this.randomAngleFromSun + " degrees", width - 400 - margin + 18, height/2 + 380);
   }
 
 }
