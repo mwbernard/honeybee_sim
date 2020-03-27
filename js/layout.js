@@ -1,10 +1,16 @@
 let colBgGreen; // #EDFFF7
 let colSection;
 let bgBeehiveImg;
+let centralBeehive;
 let foodMap;
 let margin;
 
+
 // ------------------------------------------------------
+function preload() {
+  bgBeehiveImg = loadImage('../assets/bg-hive.svg');
+}
+
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
 
@@ -13,9 +19,10 @@ function setup() {
   colSection = color(207, 246, 229);
   
   margin = 15;
-
-  bgBeehiveImg = loadImage('../assets/bg-hive.svg');
+  
   foodMap = new FoodMap(995, 400);
+  centralBeehive = new CentralBeehive(3, bgBeehiveImg);
+  centralBeehive.setupBees();
 }
 
 
@@ -30,13 +37,7 @@ function draw() {
 
 // ------------------------------------------------------
 function drawCentralBeehive() {
-  imageMode(CENTER);
-  image(bgBeehiveImg, width/2, bgBeehiveImg.height/2 + 40);
-  
-  // Bounding rectangle for beehive map
-  // rectMode(CENTER);
-  // noFill();
-  // rect(width/2, bgBeehiveImg.height/2 + 40, bgBeehiveImg.width, bgBeehiveImg.height);
+  centralBeehive.display();
 }
 
 
@@ -63,7 +64,61 @@ function windowResized() {
 
 
 
+// ------------------------------------------------------
+class CentralBeehive {
+  constructor(numBees, bgBeehiveImg) {
+    this.numBees = numBees;
+    this.bgImg = bgBeehiveImg;
+    this.centralHoneybees = [];
+  }
 
+  setupBees() {
+    for (let i = 0; i < this.numBees; i++) {
+      console.log(this.bgImg.height);
+      let centralBee = new CentralHoneybee(this.bgImg.width/2, this.bgImg.height/2);
+      this.centralHoneybees.push(centralBee);
+    }
+  }
+
+  drawBees() {
+    for (let i = 0; i < this.centralHoneybees.length; i++) {
+      this.centralHoneybees[i].display();
+    }
+  }
+  
+  display() {
+    
+    imageMode(CENTER);
+    image(this.bgImg, width/2, this.bgImg.height/2 + 40);
+    this.drawBees();
+  
+    // Bounding rectangle for beehive map
+    rectMode(CENTER);
+    noFill();
+    stroke(0);
+    rect(width/2, this.bgImg.height/2 + 40, this.bgImg.width, this.bgImg.height);
+    rectMode(CORNER);
+  }
+}
+
+
+//  ------------------------------------------------------
+class CentralHoneybee {
+  constructor(boundingLeftRight, boundingTopBottom) {
+    
+    this.pos = createVector(
+      random((width/2 - boundingLeftRight) + 60, width/2 + (boundingLeftRight - 60)),
+      random(60, (boundingTopBottom * 2) - 60)
+    );
+
+    console.log(this.pos);
+  }
+
+  display() {
+    fill(0);
+    circle(this.pos.x, this.pos.y, 20);
+  }
+}
 
 
 // ------------------------------------------------------
@@ -87,8 +142,6 @@ class FoodMap {
     this.bee.display();
   }
 }
-
-
 
 
 // ------------------------------------------------------
