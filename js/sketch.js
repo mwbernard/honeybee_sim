@@ -1,66 +1,34 @@
+let colBgGreen; // #EDFFF7
+let colSection;
+let bgBeehiveImg;
+let foodMap;
+let margin;
+
 let beeImage;
 let hiveImage;
 let foodImage;
 
 function setup() {
 
-  createCanvas(600,600);
-  beePop = 10; // number of bees
-  bees = []; // global list of bees
-  foodSources = []; // global list of food sources
+  createCanvas(window.innerWidth, window.innerHeight);
 
-  hive = new Hive(); // hive
+  // colors
+  colBgGreen = color(237, 255, 247);
+  colSection = color(207, 246, 229);
 
-  for (let i = 0; i < beePop; i++) {  // initialize all the bees
-    var beeType;
-    if (random(10) < 5) { // how many bees are explorers vs drones
-      beeType = 1; //explorer
-    } else {
-      beeType = 0; //drone
-    }
+  margin = 15;
 
-    bees.push(new Honeybee(hive.pos.x, hive.pos.y, beeType));
-  }
+  bgBeehiveImg = loadImage('../assets/bg-hive.svg');
+  foodMap = new FoodMap(995, 400);
+
 }
 
 function draw() {
+  background(colBgGreen);
+  drawCentralBeehive();
+  drawFoodMap();
+  drawDanceInfo();
 
-  background(0,150,0);
-
-  //draws hive and food
-  hive.display();
-  drawFoodSources();
-
-  // checks to make sure each bee's target actually exists
-  verify_targets(bees,foodSources,hive.knownFood);
-  // checks if bees are running into food
-  check_food_collisions(bees,foodSources);
-
-  for (let i = 0; i < beePop; i++) {
-    let bee = bees[i];
-
-    // update and display each bee
-    bee.update();
-    bee.display();
-
-    // checks if bees are over the hive
-    if (bee.check_hive_collision()) {
-      // if the bee is returning with pollen
-      if (bee.full) {
-        hive.addPollen();
-        hive.knownFood.push(bee.foundFoodSource);
-        bee.full = false;
-        bee.foundFoodSource = null;
-      }
-      // otherwise give the bee a new target to go to (as if they watched a dance)
-      if (hive.knownFood[0]) {
-        let rand = int(random(hive.knownFood.length - 1));
-        bee.setTarget(hive.knownFood[rand].x, hive.knownFood[rand].y);
-      } else {
-        bee.clearTarget();
-      }
-    }
-  }
 }
 
 
@@ -105,18 +73,18 @@ function check_food_collisions(some_bees, some_food) {
 
 // adds food on mouse click
 function mousePressed() {
-
-  foodSources.push(new FoodSource(mouseX,mouseY));
-  print(foodSources);
-
-  return false;
+  //rect(margin, height - (this.height + margin), this.width, this.height);
+  if (mouseX > margin + 20 && mouseX < 990 && mouseY > height - 400 && mouseY < height - margin - 20) {
+    foodMap.foodSources.push(new FoodSource(mouseX,mouseY));
+  //print(foodMap.foodSources);
+  }
 }
 
 
 function drawFoodSources() {
 
-  for (var i = 0; i < foodSources.length; i++) {
-    foodSources[i].display();
+  for (var i = 0; i < foodMap.foodSources.length; i++) {
+    foodMap.foodSources[i].display();
   }
 }
 
@@ -130,12 +98,131 @@ function findObjectByKey(array, key, value) {
 }
 
 
+// ------------------------------------------------------
+function drawCentralBeehive() {
+  imageMode(CENTER);
+  image(bgBeehiveImg, width/2, bgBeehiveImg.height/2 + 40);
+
+  // Bounding rectangle for beehive map
+  // rectMode(CENTER);
+  // noFill();
+  // rect(width/2, bgBeehiveImg.height/2 + 40, bgBeehiveImg.width, bgBeehiveImg.height);
+}
+
+
+// ------------------------------------------------------
+function drawFoodMap() {
+  noStroke();
+  fill(colSection);
+  foodMap.display();
+}
+
+
+// ------------------------------------------------------
+function drawDanceInfo() {
+  noStroke();
+  fill(colSection);
+  rectMode(CORNER);
+  rect(1025, height - 415, 400, 400);
+  rectMode(CENTER);
+}
+
+
+// ------------------------------------------------------
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 
 // CLASSES ------------------------------------------------------------------
+class FoodMap {
+
+  constructor(boundingWidth, boundingHeight) {
+    this.width = boundingWidth;
+    this.height = boundingHeight;
+    this.bees = [];
+    this.beePop = 10;
+    this.foodSources = [];
+    this.hive = new Hive(
+      createVector(margin, height - (this.height + margin)),
+      createVector(this.width + margin, height - margin)
+    );
+
+    // Instantiate new bee(s)
+    // Constrain bee position and movement inside of FoodMap bounding box
+
+    for (let i = 0; i < this.beePop; i++) {  // initialize all the bees
+      var beeType;
+      if (random(10) < 4) { // how many bees are explorers vs drones
+        beeType = 1; //explorer
+      } else {
+        beeType = 0; //drone
+      }
+
+      this.bees.push(new Honeybee(
+        createVector(margin, height - (this.height + margin)),
+        createVector(this.width + margin, height - margin),
+        this.hive.pos.x,
+        this.hive.pos.y,
+        beeType)
+      );
+    }
+  }
+
+  display() {
+
+    rectMode(CORNER);
+    rect(margin, height - (this.height + margin), this.width, this.height);
+    rectMode(CENTER);
+    //draws hive and food
+    this.hive.display();
+    drawFoodSources();
+
+    // checks to make sure each bee's target actually exists
+    verify_targets(this.bees,this.foodSources,this.hive.knownFood);
+    // checks if bees are running into food
+    check_food_collisions(this.bees,this.foodSources);
+
+    for (let i = 0; i < this.beePop; i++) {
+      let bee = this.bees[i];
+
+      // update and display each bee
+      bee.update();
+      bee.display();
+
+      // checks if bees are over the hive
+      if (bee.check_hive_collision()) {
+        // if the bee is returning with pollen
+        if (bee.full) {
+          this.hive.addPollen();
+          this.hive.knownFood.push(bee.foundFoodSource);
+          bee.full = false;
+          bee.foundFoodSource = null;
+        }
+        // otherwise give the bee a new target to go to (as if they watched a dance)
+        if (this.hive.knownFood[0]) {
+          let rand = int(random(this.hive.knownFood.length - 1));
+          bee.setTarget(this.hive.knownFood[rand].x, this.hive.knownFood[rand].y);
+        } else {
+          bee.clearTarget();
+        }
+      }
+    }
+    noFill();
+    stroke(colBgGreen);
+    strokeWeight(8);
+    rectMode(CORNER);
+    rect(margin - 2, height - (this.height + margin) - 2, this.width + 4, this.height + 4);
+    rectMode(CENTER);
+  }
+}
 
 class Hive {
-  constructor() {
-    this.pos = createVector(400,400);
+  constructor(topLeftCorner, bottomRightCorner) {
+    this.pos = createVector(
+      random(topLeftCorner.x + 50, bottomRightCorner.x - 50),
+      random(topLeftCorner.y + 50, bottomRightCorner.y - 50)
+    );
     this.knownFood = [];
     this.pollenLevel = 0;
   }
@@ -144,7 +231,7 @@ class Hive {
     rectMode(CENTER);
     noStroke();
     translate(this.pos.x, this.pos.y);
-    image(hiveImage,-50,-50,100,100);
+    image(hiveImage,0,0,100,100);
     fill(218,165,32);
     rect(0,50,this.pollenLevel,10);
     resetMatrix();
@@ -168,7 +255,7 @@ class FoodSource {
     rectMode(CENTER);
     fill(255,0,0);
     translate(this.pos.x, this.pos.y);
-    image(foodImage,-25,-25,50,50);
+    image(foodImage,0,0,50,50);
 
     if(this.pollen < 20){
       rect(0, 20, this.pollen, 5);
@@ -183,8 +270,14 @@ class FoodSource {
 
 class Honeybee {
 
-  constructor(hiveX,hiveY,mode) {
-    this.pos = createVector(random(width),random(height));
+  constructor(topLeftCorner, bottomRightCorner, hiveX, hiveY, mode) {
+    this.topLeftCorner = topLeftCorner;
+    this.bottomRightCorner = bottomRightCorner;
+
+    this.pos = createVector(
+      random(topLeftCorner.x, bottomRightCorner.x),
+      random(topLeftCorner.y, bottomRightCorner.y)
+    );
     this.vel = createVector(random(2)-1, random(2)-1);
     this.acc = createVector(random(2)-1, random(2)-1);
     this.target;
@@ -215,15 +308,16 @@ class Honeybee {
 
 
     //EDGE BEHAVIOR
-    if(this.pos.x < 0) {
-      this.pos.x = width;
-    } else if (this.pos.x > width) {
-      this.pos.x = 0;
+    if (this.pos.x < this.topLeftCorner.x) {
+      this.pos.x = this.bottomRightCorner.x;
+    } else if (this.pos.x > this.bottomRightCorner.x) {
+      this.pos.x = this.topLeftCorner.x;
     }
-    if(this.pos.y < 0) {
-      this.pos.y = height;
-    } else if (this.pos.y > height) {
-      this.pos.y = 0;
+
+    if (this.pos.y < this.topLeftCorner.y) {
+      this.pos.y = this.bottomRightCorner.y;
+    } else if (this.pos.y > this.bottomRightCorner.y) {
+      this.pos.y = this.topLeftCorner.y;
     }
   }
 
@@ -237,16 +331,16 @@ class Honeybee {
     rotate(this.vel.heading() + PI/2);
 
     //draw bee
-    image(beeImage,-10,-10,20,20);
+    image(beeImage,0,0,20,20);
 
     resetMatrix();
   }
 
   explore() {
 
-    for (let i = 0; i < foodSources.length; i++) {
-      if(dist(this.pos.x, this.pos.y, foodSources[i].pos.x, foodSources[i].pos.y) < 50) {
-        this.setTarget(foodSources[i].pos.x, foodSources[i].pos.y);
+    for (let i = 0; i < foodMap.foodSources.length; i++) {
+      if(dist(this.pos.x, this.pos.y, foodMap.foodSources[i].pos.x, foodMap.foodSources[i].pos.y) < 50) {
+        this.setTarget(foodMap.foodSources[i].pos.x, foodMap.foodSources[i].pos.y);
       }
     }
     this.acc = createVector(random(2)-1, random(2)-1);
@@ -262,13 +356,13 @@ class Honeybee {
 
   setTarget(newTargetx, newTargety) {
     this.target = createVector(newTargetx,newTargety);
-    print("new target = " + newTargetx + "," + newTargety);
+    //print("new target = " + newTargetx + "," + newTargety);
   }
 
   fillUp() {
     this.full = true;
     this.target = this.hive;
-    print("now I'm full");
+    //print("now I'm full");
   }
 
   calc_heading(targ) {
