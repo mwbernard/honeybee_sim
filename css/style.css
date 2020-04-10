@@ -3,7 +3,8 @@ body {
   margin: 0;
 }
 
-#figure-8 {
-  width: 200px;
-  display: none;
+#inner-view-container,
+#outer-view-container {
+  width: 100vw;
+  height: 100vh;
 }
