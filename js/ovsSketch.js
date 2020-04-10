@@ -1,5 +1,3 @@
-// @martin make sure to include <div id="outer-view-container"></div> in the body in index.html
-
 let outerViewElem = document.getElementById('outer-view-container');
 
 // ------------------------------------------------------
