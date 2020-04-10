@@ -15,6 +15,10 @@ class Honeybee {
     this.foundFoodSource;
     this.hive = createVector(hiveX,hiveY);
     this.mode = mode; // 0 for done bees, 1 for worker bees
+
+    this.life_span = 500;
+    this.has_mites = false;
+    this.has_pesticides = false;
   }
 
   // ------------------------------------------------------
@@ -66,19 +70,13 @@ class Honeybee {
     rotate(this.vel.heading() + PI/2);
 
     // draw bee
-    image(beeImage, 0, 0, 10, 10);
+    image(beeImage, 0, 0, 20, 20);
 
     resetMatrix();
   }
 
   // ------------------------------------------------------
   explore() {
-
-    for (let i = 0; i < foodMap.hive.foodSources.length; i++) {
-      if (dist(this.pos.x, this.pos.y, foodMap.hive.foodSources[i].pos.x, foodMap.hive.foodSources[i].pos.y) < 70) {
-        this.setTarget(foodMap.hive.foodSources[i].pos.x, foodMap.hive.foodSources[i].pos.y);
-      }
-    }
     this.acc = createVector(random(2)-1, random(2)-1);
   }
 
@@ -115,7 +113,7 @@ class Honeybee {
   // ------------------------------------------------------
   check_collision(foodx, foody) {
 
-    if (abs(foodx - this.pos.x) < 10 && abs(foody - this.pos.y) < 10) {
+    if (dist(this.pos.x, this.pos.y, foodx, foody) < 10) {
       return true;
     } else {
       return false;
@@ -125,7 +123,7 @@ class Honeybee {
   // ------------------------------------------------------
   check_hive_collision() {
 
-    if (abs(this.hive.x - this.pos.x) < 20 && abs(this.hive.y - this.pos.y) < 20) {
+    if (this.distance_from_hive() < 30) {
       return true;
     } else {
       return false;

@@ -85,8 +85,6 @@ class Hive {
     this.update_food_sources();
     // makes sure hives known food sources actually exist
     this.verify_targets();
-    // checks if bees are on food sources
-    this.check_food_collisions();
   }
 
   display() {
@@ -115,7 +113,7 @@ class Hive {
     if (this.knownFood[0]){
       for (let i = 0; i < this.knownFood.length; i++) {
         if (findObjectByKey(this.foodSources, "x", this.knownFood.x) == null) {
-          this.knownFood.splice(i);
+          this.knownFood.splice(i,1);
         }
       }
     }
@@ -123,41 +121,43 @@ class Hive {
 
   // --------------------------------------------------------
   //
-  check_food_collisions() {
+  check_food_collisions(a_bee) {
 
     // for each bee
-    for (let j = 0; j < this.bees.length; j++) {
-      let a_bee = this.bees[j];
-      let food_exists = false;
+    let food_exists = false;
 
-      // for each flower
-      for (let i = 0; i < this.foodSources.length; i++) {
-        let a_food = this.foodSources[i]
+    // for each flower
+    for (let i = 0; i < this.foodSources.length; i++) {
+      let a_food = this.foodSources[i]
 
-        //checks if bees target flower exists
-        if (a_bee.target && a_bee.target.x == a_food.pos.x) {
-          food_exists = true;
-        }
-
-        //if bee is on the flower
-        if (a_bee.check_collision(a_food.pos.x, a_food.pos.y) && a_bee.full != true) {
-          a_bee.fillUp();
-          a_bee.foundFoodSource = a_food.pos;
-        }
+      //
+      if (!a_bee.target && dist(a_bee.pos.x, a_bee.pos.y, a_food.head_pos.x, a_food.head_pos.y) < 70) {
+        a_bee.setTarget(a_food.head_pos.x, a_food.head_pos.y);
       }
-      //if the bees target (which is a flower) does not exist anymore
-      if (a_bee.target && a_bee.target.x != this.pos.x && food_exists == false) {
-        //print('hi');
-        a_bee.clearTarget();
+
+      //checks if bees target flower exists
+      if (a_bee.target && a_bee.target.x == a_food.head_pos.x && !a_food.died) {
+        food_exists = true;
+      }
+
+      //if bee is on the flower
+      if (a_bee.check_collision(a_food.head_pos.x, a_food.head_pos.y) && a_bee.full != true) {
+        a_bee.fillUp();
+        a_bee.foundFoodSource = a_food.head_pos;
       }
     }
+    //if the bees target (which is a flower) does not exist anymore
+    if (a_bee.target && a_bee.target.x != this.pos.x && food_exists == false) {
+      a_bee.clearTarget();
+    }
+
   }
 
   // --------------------------------------------------------
   update_food_sources() {
     for (var i = 0; i < this.foodSources.length; i++) {
       this.foodSources[i].update();
-      if (this.foodSources[i].died) {
+      if (this.foodSources[i].gone) {
         this.foodSources.splice(i,1);
       }
     }
@@ -168,6 +168,8 @@ class Hive {
       let bee = this.bees[i];
       // update each bee
       bee.update();
+
+      this.check_food_collisions(bee);
 
       // checks if bees are over the hive
       if (bee.check_hive_collision()) {
@@ -188,7 +190,6 @@ class Hive {
         }
       }
     }
-
   }
 
   display_food_sources() {
@@ -207,28 +208,45 @@ class Hive {
 
 // ------------------------------------------------------
 class FoodSource {
-  constructor(posX, posY) {
-    this.pos        = createVector(posX,posY-margin);
-    this.id         = posX*posY;
+  constructor(posX, posY, flower_type) {
+    this.pos        = createVector(posX, posY);
+    this.head_pos   = createVector(posX, posY - 60);
     this.age        = 0;
-    this.died       = false;
-    this.color_val  = 100;
-    this.stem_len   = 20;
     this.life_span  = 300;
+    this.died       = false;
+    this.gone       = false;
+    this.scale      = 150
+    this.offset     = 40;
+
+
+    this.type       = flower_type;  // 0 = lavender,1 = yellow, or 2 = pink
+    this.image;
+    this.pesticide  = 0; // amount of doses
+
+
+    this.pick_image(lav_baby, yel_baby, pink_baby);
+
   }
 
   update() {
+
     this.age+=.1;
 
-    if (this.age < 60) {
-      this.pos.y-=.05;
-      this.stem_len+=.05;
-    } else if (this.age < this.life_span) {
-      this.pos.y+=.01;
-      this.stem_len-=.01;
-      this.color_val+=1;
-    } else {
+    if (this.age < this.life_span/3) {
+      this.head_pos.y = this.pos.y - this.scale*.4;
+
+    } else if (this.age < this.life_span*2/3) {
+      this.offset = this.scale*.4
+      this.head_pos.y = this.pos.y - this.scale*.7;
+      this.pick_image(lav_adult, yel_adult, pink_adult);
+
+    } else if (this.age < this.life_span){
+      this.offset = this.scale*.2;
       this.died = true;
+      this.image = flower_dead;
+
+    } else {
+      this.gone = true;
     }
 
   }
@@ -236,14 +254,30 @@ class FoodSource {
   display() {
     applyMatrix();
     noStroke();
-    fill(0,100,0);
-    translate(this.pos.x, this.pos.y);
+    translate(this.pos.x, this.pos.y - this.offset);
 
-    rect(0,this.stem_len/2,5,this.stem_len);
-
-    image(foodImage, 0, 0, 50, 50);
+    image(this.image, 0, 0, this.scale, this.scale);
 
     resetMatrix();
+  }
+
+  pick_image(image1, image2, image3) {
+    switch(this.type) {
+      case 0:
+        this.image = image1;
+        break;
+      case 1:
+        this.image = image2;
+        break;
+      case 2:
+        this.image = image3;
+        break;
+    }
+  }
+
+  add_pesticide() {
+    this.pesticide++;
+    this.life_span+=50;
   }
 
 }
