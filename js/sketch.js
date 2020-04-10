@@ -9,22 +9,37 @@ let margin;
 let bgBeehiveImg;
 let beeImage;
 let hiveImage;
-let foodImage;
 let figureEightImage;
 let figureEightImageElem;
 
 let inconsolata;
+
+let lav_baby;
+let lav_adult;
+let pink_baby;
+let pink_adult;
+let yel_baby;
+let yel_adult;
+let flower_dead;
 
 
 // ------------------------------------------------------
 function preload() {
   beeImage         = loadImage('../assets/icon-bee.png');
   hiveImage        = loadImage('../assets/icon-hive.png');
-  foodImage        = loadImage('../assets/icon-flower.png');
+
   bgBeehiveImg     = loadImage('../assets/bg-hive.svg');
   figureEightImage = createImg('../assets/figure-8.gif', 'figure-8');
   inconsolata      = loadFont('../assets/inconsolata.ttf');
   figureEightImage.id('figure-8');
+
+  lav_baby        = loadImage('../assets/lavender_baby.png');
+  lav_adult       = loadImage('../assets/lavender_adult.png');
+  pink_baby       = loadImage('../assets/pink_baby.png');
+  pink_adult      = loadImage('../assets/pink_adult.png');
+  yel_baby        = loadImage('../assets/yellow_baby.png');
+  yel_adult       = loadImage('../assets/yellow_adult.png');
+  flower_dead     = loadImage('../assets/flower_dead.png');
 }
 
 // ------------------------------------------------------
@@ -43,7 +58,7 @@ function setup() {
   colBlue = color(58, 25, 255);
 
   margin = 15;
-  foodMap = new FoodMap(995, 400);
+  foodMap = new FoodMap(width - 2*margin, 400);
   centralBeehive = new CentralBeehive(20, bgBeehiveImg);
   centralBeehive.setupBees();
 }
@@ -54,8 +69,8 @@ function draw() {
   background(colBgGreen);
   drawCentralBeehive();
   drawFoodMap();
-  drawDanceInfo();
-  showLabels();
+  //drawDanceInfo();
+  //showLabels();
   figureEightImageElem.style.display = 'none';
 
   // Maybe this can move into the CentralBeehive class? Not sure
@@ -64,8 +79,6 @@ function draw() {
       centralBeehive.centralHoneybees[i].handleHover();
     }
   }
-
-
 }
 
 
@@ -117,8 +130,8 @@ function drawDanceInfo() {
 // adds food on mouse click
 function mousePressed() {
   // rect(margin, height - (this.height + margin), this.width, this.height);
-  if (mouseX > margin + 20 && mouseX < 990 && mouseY > height - 400 && mouseY < height - margin - 20) {
-    foodMap.hive.foodSources.push(new FoodSource(mouseX,height - margin));
+  if (mouseX > margin + 20 && mouseX < width - 35 && mouseY > height - 400 && mouseY < height - margin - 20) {
+    foodMap.hive.foodSources.push(new FoodSource(mouseX,height - margin,0));
   // print(foodMap.foodSources);
   }
 }
