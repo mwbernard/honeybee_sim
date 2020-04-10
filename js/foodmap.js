@@ -16,7 +16,7 @@ class FoodMap {
   }
 
   update() {
-
+    // update time, temp, gravity stuff here
     this.hive.update();
   }
 
