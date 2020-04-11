@@ -1,13 +1,19 @@
 class FoodMap {
 
   // ------------------------------------------------------
-  constructor(boundingWidth, boundingHeight) {
+  constructor(boundingWidth, boundingHeight, opts, p5s) {
+    this.opts = opts;
+    this.p5s = p5s;
+
     this.width = boundingWidth;
     this.height = boundingHeight;
 
     this.hive = new Hive(
-      createVector(margin, height - (this.height + margin)),
-      createVector(this.width + margin, height - margin)
+      this.p5s.createVector(0, this.p5s.height - (this.height)),
+      this.p5s.createVector(this.width, this.p5s.height),
+      this.opts,
+      this.p5s,
+      this
     );
 
     this.temp;
@@ -15,29 +21,39 @@ class FoodMap {
     this.time;
   }
 
+
+  // ------------------------------------------------------
   update() {
     // update time, temp, gravity stuff here
     this.hive.update();
   }
 
+
   // ------------------------------------------------------
   display() {
 
-    //draw map rect
-    rectMode(CORNER);
-    rect(margin, height - (this.height + margin), this.width, this.height);
-    rectMode(CENTER);
+    // draw map rect
+    this.p5s.rectMode(this.p5s.CORNER);
+    this.p5s.rect(0, this.p5s.height - (this.height), this.width, this.height);
+    this.p5s.rectMode(this.p5s.CENTER);
 
     // draws hive and food
     this.hive.display();
 
-    //draw border to make edge clean
-    noFill();
-    stroke(colBgGreen);
-    strokeWeight(8);
-    rectMode(CORNER);
-    rect(margin - 2, height - (this.height + margin) - 2, this.width + 4, this.height + 4);
-    rectMode(CENTER);
+    // draw border to make edge clean
+    this.p5s.noFill();
+    this.p5s.stroke(this.opts.colBgGreen);
+    this.p5s.strokeWeight(8);
+    this.p5s.rectMode(this.p5s.CORNER);
+
+    this.p5s.rect(
+      0,
+      this.p5s.height - this.height,
+      this.width,
+      this.height
+    );
+
+    this.p5s.rectMode(this.p5s.CENTER);
   }
 }
 
@@ -46,22 +62,32 @@ class FoodMap {
 // ------------------------------------------------------
 class Hive {
 
-  constructor(topLeftCorner, bottomRightCorner) {
-    this.pos = createVector(
-      topLeftCorner.x + (bottomRightCorner.x - topLeftCorner.x)/2,
-      topLeftCorner.y + 50);
-    this.knownFood = [];
+  constructor(topLeftCorner, bottomRightCorner, opts, p5s, foodMap) {
+
+    this.tl = topLeftCorner;
+    this.br = bottomRightCorner;
+
+    this.opts = opts;
+    this.foodMap = foodMap;
+    this.p5s = p5s;
+
+    this.pos = this.p5s.createVector(
+      topLeftCorner.x + (bottomRightCorner.x - topLeftCorner.x) / 2,
+      topLeftCorner.y + 200
+    );
+
+    this.knownFood   = [];
     this.foodSources = [];
     this.pollenLevel = 0;
-    this.bees = [];
-    this.beePop = 20;
+    this.bees        = [];
+    this.beePop      = 30;
 
     // Instantiate new bee(s)
     // Constrain bee position and movement inside of FoodMap bounding box
 
     for (let i = 0; i < this.beePop; i++) {  // initialize all the bees
       var beeType;
-      if (random(10) < 6) { // how many bees are workers vs drones
+      if (this.p5s.random(10) < 6) { // how many bees are workers vs drones
         beeType = 1; // worker
       } else {
         beeType = 0; // drone
@@ -72,8 +98,11 @@ class Hive {
         bottomRightCorner,
         this.pos.x,
         this.pos.y,
-        beeType)
-      );
+        beeType,
+        this.foodMap,
+        this.opts,
+        this.p5s
+      ));
     }
   }
 
@@ -87,20 +116,32 @@ class Hive {
     this.verify_targets();
   }
 
+
+  // ------------------------------------------------------
   display() {
 
     // draws actual hive - this may change to just drawing the opening
-    applyMatrix();
-    rectMode(CENTER);
-    noStroke();
-    translate(this.pos.x, this.pos.y);
-    image(hiveImage,0,0,100,100);
-    fill(218,165,32);
-    rect(0,50,this.pollenLevel,10);
-    resetMatrix();
+    this.p5s.applyMatrix();
+    this.p5s.rectMode(this.p5s.CENTER);
+    this.p5s.noStroke();
+    this.p5s.translate(this.pos.x, this.pos.y);
+    this.p5s.image(this.opts.hiveImage10, -150, -150, 300, 300);
+    this.p5s.resetMatrix();
 
     this.display_food_sources();
     this.display_bees();
+  }
+
+  // ------------------------------------------------------
+  addFoodSource() {
+
+    this.foodSources.push(new FoodSource(
+      this.p5s.random(this.tl.x, this.br.x),
+      this.br.y - 50,
+      this.opts,
+      this.p5s,
+      this.p5s.floor(this.p5s.random(3))
+    ));
   }
 
   // ------------------------------------------------------
@@ -108,19 +149,20 @@ class Hive {
     this.pollenLevel += 2;
   }
 
-  verify_targets() {
 
-    if (this.knownFood[0]){
+  // ------------------------------------------------------
+  verify_targets() {
+    if (this.knownFood[0]) {
       for (let i = 0; i < this.knownFood.length; i++) {
-        if (findObjectByKey(this.foodSources, "x", this.knownFood.x) == null) {
-          this.knownFood.splice(i,1);
+        if (this.p5s.findObjectByKey(this.foodSources, "x", this.knownFood.x) == null) {
+          this.knownFood.splice(i);
         }
       }
     }
   }
 
+
   // --------------------------------------------------------
-  //
   check_food_collisions(a_bee) {
 
     // for each bee
@@ -130,13 +172,13 @@ class Hive {
     for (let i = 0; i < this.foodSources.length; i++) {
       let a_food = this.foodSources[i]
 
-      //
-      if (!a_bee.target && dist(a_bee.pos.x, a_bee.pos.y, a_food.head_pos.x, a_food.head_pos.y) < 70) {
+      // if bee is near a flower it smells in
+      if (!a_bee.target && this.p5s.dist(a_bee.pos.x, a_bee.pos.y, a_food.head_pos.x, a_food.head_pos.y) < 70) {
         a_bee.setTarget(a_food.head_pos.x, a_food.head_pos.y);
       }
 
       //checks if bees target flower exists
-      if (a_bee.target && a_bee.target.x == a_food.head_pos.x && !a_food.died) {
+      if (a_bee.target && a_bee.target.x == a_food.head_pos.x && !a_food.died && !a_food.baby) {
         food_exists = true;
       }
 
@@ -153,16 +195,18 @@ class Hive {
 
   }
 
+
   // --------------------------------------------------------
   update_food_sources() {
     for (var i = 0; i < this.foodSources.length; i++) {
       this.foodSources[i].update();
       if (this.foodSources[i].gone) {
-        this.foodSources.splice(i,1);
+        this.foodSources.splice(i, 1);
       }
     }
   }
 
+  // ------------------------------------------------------
   update_bees() {
     for (let i = 0; i < this.beePop; i++) {
       let bee = this.bees[i];
@@ -183,7 +227,7 @@ class Hive {
 
         // otherwise give the bee a new target to go to (as if they watched a dance)
         if (this.knownFood[0]) {
-          let rand = int(random(this.knownFood.length - 1));
+          let rand = this.p5s.int(this.p5s.random(this.knownFood.length - 1));
           bee.setTarget(this.knownFood[rand].x, this.knownFood[rand].y);
         } else {
           bee.clearTarget();
@@ -192,12 +236,15 @@ class Hive {
     }
   }
 
+
+  // ------------------------------------------------------
   display_food_sources() {
     for (var i = 0; i < this.foodSources.length; i++) {
       this.foodSources[i].display();
     }
   }
 
+  // ------------------------------------------------------
   display_bees() {
     for (let i = 0; i < this.beePop; i++) {
       this.bees[i].display();
@@ -206,44 +253,48 @@ class Hive {
 }
 
 
+
+
 // ------------------------------------------------------
 class FoodSource {
-  constructor(posX, posY, flower_type) {
-    this.pos        = createVector(posX, posY);
-    this.head_pos   = createVector(posX, posY - 60);
-    this.age        = 0;
-    this.life_span  = 300;
-    this.died       = false;
-    this.gone       = false;
-    this.scale      = 150
-    this.offset     = 40;
-
+  constructor(posX, posY, opts, p5s, flower_type) {
+    this.p5s       = p5s;
+    this.opts      = opts;
+    this.pos       = this.p5s.createVector(posX, posY);
+    this.head_pos  = this.p5s.createVector(posX + 300, posY);
+    this.age       = 0;
+    this.life_span = 300;
+    this.baby      = true;
+    this.died      = false;
+    this.gone      = false;
+    this.scale     = 200;
+    this.offset    = 10;
 
     this.type       = flower_type;  // 0 = lavender,1 = yellow, or 2 = pink
     this.image;
     this.pesticide  = 0; // amount of doses
 
-
-    this.pick_image(lav_baby, yel_baby, pink_baby);
-
+    this.pick_image(this.opts.lav_baby, this.opts.yel_baby, this.opts.pink_baby);
   }
 
+
+  // ------------------------------------------------------
   update() {
 
-    this.age+=.1;
+    this.age+=.01;
 
     if (this.age < this.life_span/3) {
-      this.head_pos.y = this.pos.y - this.scale*.4;
-
+      //nothing for now
     } else if (this.age < this.life_span*2/3) {
-      this.offset = this.scale*.4
-      this.head_pos.y = this.pos.y - this.scale*.7;
-      this.pick_image(lav_adult, yel_adult, pink_adult);
+      this.baby = false;
+      this.offset = this.scale*.2
+      this.head_pos.y = this.pos.y - this.scale*.5;
+      this.pick_image(this.opts.lav_adult, this.opts.yel_adult, this.opts.pink_adult);
 
     } else if (this.age < this.life_span){
-      this.offset = this.scale*.2;
+      this.offset = 10;
       this.died = true;
-      this.image = flower_dead;
+      this.image = this.opts.flower_dead;
 
     } else {
       this.gone = true;
@@ -251,14 +302,14 @@ class FoodSource {
 
   }
 
+
+  // ------------------------------------------------------
   display() {
-    applyMatrix();
-    noStroke();
-    translate(this.pos.x, this.pos.y - this.offset);
-
-    image(this.image, 0, 0, this.scale, this.scale);
-
-    resetMatrix();
+    this.p5s.applyMatrix();
+    this.p5s.noStroke();
+    this.p5s.translate(this.pos.x, this.pos.y);
+    this.p5s.image(this.image, this.scale/-2 - this.offset, this.scale/-2 - this.offset, this.scale, this.scale);
+    this.p5s.resetMatrix();
   }
 
   pick_image(image1, image2, image3) {
@@ -279,5 +330,4 @@ class FoodSource {
     this.pesticide++;
     this.life_span+=50;
   }
-
 }
