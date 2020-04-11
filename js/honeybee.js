@@ -61,7 +61,7 @@ class Honeybee {
     this.acc.setMag(.2); // change this number to make the bees make tighter turns (higher num = tighter turns)
     this.vel.add(this.acc);
     this.pos.add(this.vel);
-    this.vel.setMag(1); // keeps acc from stacking and going too fast
+    this.vel.setMag(1.5); // keeps acc from stacking and going too fast
 
   }
 

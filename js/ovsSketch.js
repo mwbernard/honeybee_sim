@@ -114,16 +114,16 @@ let outerView = new p5 (( ovs ) => {
   //------------------------------------------------------
   //-------------------------------------------------------
 ovs. switchTimeColor = () => {
-  if(ovs.hour() >= 0 && ovs.hour() <=6){
+  if(ovs.hour() <=6) {
     ovs.lowerImg = ovs.nightImg;
   }
-  if(ovs.hour() > 6 && ovs.hour() <9){
+  else if(ovs.hour() <9) {
     ovs.lowerImg = ovs.morningImg;
   }
-  if(ovs.hour() >= 9 && ovs.hour() <18){
+  else if(ovs.hour() <18) {
     ovs.lowerImg = ovs.dayImg;
   }
-  if(ovs.hour() > 18 && ovs.hour() <=23){
+  else {
     ovs.lowerImg = ovs.nightImg;
   }
 }

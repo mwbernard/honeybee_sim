@@ -80,7 +80,7 @@ class Hive {
     this.foodSources = [];
     this.pollenLevel = 0;
     this.bees        = [];
-    this.beePop      = 30;
+    this.beePop      = 20;
 
     // Instantiate new bee(s)
     // Constrain bee position and movement inside of FoodMap bounding box
@@ -261,7 +261,7 @@ class FoodSource {
     this.p5s       = p5s;
     this.opts      = opts;
     this.pos       = this.p5s.createVector(posX, posY);
-    this.head_pos  = this.p5s.createVector(posX + 300, posY);
+    this.head_pos  = this.p5s.createVector(posX, posY + 300);
     this.age       = 0;
     this.life_span = 300;
     this.baby      = true;
