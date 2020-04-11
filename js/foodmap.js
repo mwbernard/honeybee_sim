@@ -42,9 +42,9 @@ class FoodMap {
 
     // draw border to make edge clean
     this.p5s.noFill();
-    this.p5s.stroke(this.opts.colBgGreen);
-    this.p5s.strokeWeight(8);
-    this.p5s.rectMode(this.p5s.CORNER);
+   // this.p5s.stroke(this.opts.colBgGreen);
+   // this.p5s.strokeWeight(8);
+   // this.p5s.rectMode(this.p5s.CORNER);
 
     this.p5s.rect(
       0,

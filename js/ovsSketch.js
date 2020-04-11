@@ -18,6 +18,11 @@ let outerView = new p5 (( ovs ) => {
     ovs.yel_baby         = ovs.loadImage('../assets/yellow_baby.png');
     ovs.yel_adult        = ovs.loadImage('../assets/yellow_adult.png');
     ovs.flower_dead      = ovs.loadImage('../assets/flower_dead.png');
+
+    ovs.morningImg       = ovs.loadImage("../assets/morning.webp");
+    ovs.dayImg           = ovs.loadImage("../assets/evening.webp");
+    ovs.nightImg         = ovs.loadImage("../assets/night.webp");
+    ovs.lowerImg         = ovs. morningImg;
   }
 
 
@@ -50,12 +55,13 @@ let outerView = new p5 (( ovs ) => {
     }
 
     ovs.foodMap = new FoodMap(window.innerWidth, window.innerHeight, ovsOpts, ovs);
+    ovs.switchTimeColor();
   };
 
 
   // ------------------------------------------------------
   ovs.draw = () => {
-    ovs.background(255, 255, 0);
+    ovs.background(ovs.lowerImg);
     ovs.drawFoodMap();
   }
 
@@ -69,7 +75,7 @@ let outerView = new p5 (( ovs ) => {
   // ------------------------------------------------------
   ovs.drawFoodMap = () => {
     ovs.noStroke();
-    ovs.fill(ovs.color(58, 25, 255));
+  //  ovs.fill(ovs.color(58, 25, 255));
     ovs.foodMap.update();
     ovs.foodMap.display();
   }
@@ -103,5 +109,23 @@ let outerView = new p5 (( ovs ) => {
   ovs.windowResized = () => {
     ovs.resizeCanvas(window.innerWidth, window.innerHeight);
   }
+
+
+  //------------------------------------------------------
+  //-------------------------------------------------------
+ovs. switchTimeColor = () => {
+  if(ovs.hour() >= 0 && ovs.hour() <=6){
+    ovs.lowerImg = ovs.nightImg;
+  }
+  if(ovs.hour() > 6 && ovs.hour() <9){
+    ovs.lowerImg = ovs.morningImg;
+  }
+  if(ovs.hour() >= 9 && ovs.hour() <18){
+    ovs.lowerImg = ovs.dayImg;
+  }
+  if(ovs.hour() > 18 && ovs.hour() <=23){
+    ovs.lowerImg = ovs.nightImg;
+  }
+}
 
 }, outerViewElem);
