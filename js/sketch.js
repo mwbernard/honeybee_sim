@@ -23,6 +23,11 @@ let yel_adult;
 let flower_dead;
 
 
+let skyColor = "#9FB5DE";
+let morningImg, dayImg, nightImg;
+let lowerImg;
+
+
 // ------------------------------------------------------
 function preload() {
   beeImage         = loadImage('../assets/icon-bee.png');
@@ -66,7 +71,7 @@ function setup() {
 
 // ------------------------------------------------------
 function draw() {
-  background(colBgGreen);
+  background(skyColor);
   drawCentralBeehive();
   drawFoodMap();
   //drawDanceInfo();
@@ -152,11 +157,6 @@ function findObjectByKey(array, key, value) {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
-
-
-
-
 
 
 // ------------------------------------------------------
