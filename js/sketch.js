@@ -9,10 +9,6 @@ let margin;
 let bgBeehiveImg;
 let beeImage;
 let hiveImage;
-let figureEightImage;
-let figureEightImageElem;
-
-let inconsolata;
 
 let lav_baby;
 let lav_adult;
@@ -34,9 +30,7 @@ function preload() {
   hiveImage        = loadImage('../assets/icon-hive.png');
 
   bgBeehiveImg     = loadImage('../assets/bg-hive.svg');
-  figureEightImage = createImg('../assets/figure-8.gif', 'figure-8');
-  inconsolata      = loadFont('../assets/inconsolata.ttf');
-  figureEightImage.id('figure-8');
+
 
   lav_baby        = loadImage('../assets/lavender_baby.png');
   lav_adult       = loadImage('../assets/lavender_adult.png');
@@ -74,9 +68,6 @@ function draw() {
   background(skyColor);
   drawCentralBeehive();
   drawFoodMap();
-  //drawDanceInfo();
-  //showLabels();
-  figureEightImageElem.style.display = 'none';
 
   // Maybe this can move into the CentralBeehive class? Not sure
   for (let i = 0; i < centralBeehive.centralHoneybees.length; i++) {
@@ -84,23 +75,6 @@ function draw() {
       centralBeehive.centralHoneybees[i].handleHover();
     }
   }
-}
-
-
-// ------------------------------------------------------
-function showLabels() {
-  textSize(22);
-  fill(colBlue);
-  text('CENTRAL BEEHIVE', 30, 45);
-  text('FOOD MAP', 30, height/2 + 80);
-
-  // SUPER CHEATING
-  text('DANCE INFO', width - 400 - margin + 18, height/2 + 80);
-  strokeWeight(0);
-  textSize(18);
-  fill(0);
-  text("FOOD DISTANCE FROM HIVE:", width - 400 - margin + 18, height/2 + 290);
-  text("ANGLE:", width - 400 - margin + 18, height/2 + 375);
 }
 
 
@@ -117,19 +91,6 @@ function drawFoodMap() {
   foodMap.update();
   foodMap.display();
 }
-
-
-// ------------------------------------------------------
-function drawDanceInfo() {
-  noStroke();
-  fill(colSection);
-  rectMode(CORNER);
-  rect(1025, height - 415, 400, 400);
-  rectMode(CENTER);
-}
-
-
-
 
 // ------------------------------------------------------
 // adds food on mouse click
@@ -187,12 +148,7 @@ class CentralBeehive {
     image(this.bgImg, width/2, this.bgImg.height/2 + 40);
     this.drawBees();
 
-    // Bounding rectangle for beehive map
-    // rectMode(CENTER);
-    // noFill();
-    // stroke(0);
-    // rect(width/2, this.bgImg.height/2 + 40, this.bgImg.width, this.bgImg.height);
-    // rectMode(CORNER);
+  
   }
 }
 
@@ -235,19 +191,8 @@ class CentralHoneybee {
       fill(0, 255, 195);
       circle(this.pos.x, this.pos.y, 45);
       this.display();
-      this.showDanceInfoText();
     }
   }
 
-  // ------------------------------------------------------
-  showDanceInfoText() {
-    strokeWeight(0);
-    textSize(38);
-    fill(colBlue);
-    figureEightImageElem.style.display = 'block';
-    figureEightImage.position(width - 400 - margin + 18, height/2 + 100);
-    text(this.distanceFromFood + " miles", width - 400 - margin + 18, height/2 + 330)
-    text(this.randomAngleFromSun + " degrees", width - 400 - margin + 18, height/2 + 415);
-  }
 
 }
