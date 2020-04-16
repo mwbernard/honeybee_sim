@@ -50,8 +50,8 @@ class InnerHive {
   // ------------------------------------------------------
   generateHexGrid() {
     
-    let yBounds = this.p5s.height + this.s - this.margin;
-    let xBounds = (this.p5s.width + this.r) - this.margin - 87.5;
+    let yBounds = this.p5s.height + this.s - this.margin - (this.r * 2);
+    let xBounds = (this.p5s.width + this.r) - this.margin - (this.r * 2);
 
     for (let y = this.margin; y < yBounds; y += 2 * this.s) {
       for (let x = this.margin; x < xBounds; x += 3 * this.r) {
@@ -94,7 +94,7 @@ class InnerHive {
   createBees() {
 
     let bounds = {
-      xBounds: (this.p5s.width + this.r) - this.margin - 87.5,
+      xBounds: (this.p5s.width + this.r) - this.margin - (this.r * 2),
       yBounds:  this.p5s.height + this.s - this.margin,
     }
 

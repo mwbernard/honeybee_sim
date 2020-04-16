@@ -42,7 +42,7 @@ div#info-container {
   align-items: center;
 }
 
-#colony-health, #time {
+.label {
   color: white;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 30px;
@@ -55,6 +55,20 @@ div#info-container {
 
 #time {
   margin-right: 100px;
+}
+
+#food-supply-label {
+  position: absolute;
+  left: 50%;
+	transform: translateX(-50%);
+	bottom: 100px;
+}
+
+#colony-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -120px;
 }
 
 canvas {
