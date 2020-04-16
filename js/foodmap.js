@@ -73,7 +73,7 @@ class Hive {
 
     this.pos = this.p5s.createVector(
       topLeftCorner.x + (bottomRightCorner.x - topLeftCorner.x) / 2,
-      topLeftCorner.y + 200
+      topLeftCorner.y + 350
     );
 
     this.knownFood   = [];
@@ -81,6 +81,7 @@ class Hive {
     this.pollenLevel = 0;
     this.bees        = [];
     this.beePop      = 20;
+    this.max_food_sources = 10;
 
     // Instantiate new bee(s)
     // Constrain bee position and movement inside of FoodMap bounding box
@@ -102,6 +103,18 @@ class Hive {
         this.foodMap,
         this.opts,
         this.p5s
+      ));
+    }
+
+    // start with a few foodSources
+    for (let i = 0; i < 3; i++) {
+      this.foodSources.push(new FoodSource(
+        this.p5s.random(this.tl.x + 50, this.br.x - 50),
+        this.br.y - 50,
+        this.opts,
+        this.p5s,
+        this.p5s.floor(this.p5s.random(3)),
+        this.p5s.random(250,350)
       ));
     }
   }
@@ -135,13 +148,16 @@ class Hive {
   // ------------------------------------------------------
   addFoodSource() {
 
-    this.foodSources.push(new FoodSource(
-      this.p5s.random(this.tl.x, this.br.x),
-      this.br.y - 50,
-      this.opts,
-      this.p5s,
-      this.p5s.floor(this.p5s.random(3))
-    ));
+    if (this.foodSources.length < this.max_food_sources) {
+      this.foodSources.push(new FoodSource(
+        this.p5s.random(this.tl.x + 50, this.br.x - 50),
+        this.br.y - 50,
+        this.opts,
+        this.p5s,
+        this.p5s.floor(this.p5s.random(3)),
+        this.p5s.random(250,350)
+      ));
+    }
   }
 
   // ------------------------------------------------------
@@ -155,7 +171,7 @@ class Hive {
     if (this.knownFood[0]) {
       for (let i = 0; i < this.knownFood.length; i++) {
         if (this.p5s.findObjectByKey(this.foodSources, "x", this.knownFood.x) == null) {
-          this.knownFood.splice(i);
+          this.knownFood.splice(i,1);
         }
       }
     }
@@ -204,6 +220,17 @@ class Hive {
         this.foodSources.splice(i, 1);
       }
     }
+
+    if (this.foodSources.length < 3) {
+      this.foodSources.push(new FoodSource(
+        this.p5s.random(this.tl.x + 50, this.br.x - 50),
+        this.br.y - 50,
+        this.opts,
+        this.p5s,
+        this.p5s.floor(this.p5s.random(3)),
+        this.p5s.random(250,350)
+      ));
+    }
   }
 
   // ------------------------------------------------------
@@ -220,7 +247,9 @@ class Hive {
         // if the bee is returning with pollen
         if (bee.full) {
           this.addPollen();
-          this.knownFood.push(bee.foundFoodSource);
+          if (this.p5s.findObjectByKey(this.knownFood, "x", bee.foundFoodSource.x) == null) {
+            this.knownFood.push(bee.foundFoodSource);
+          }
           bee.full = false;
           bee.foundFoodSource = null;
         }
@@ -257,18 +286,18 @@ class Hive {
 
 // ------------------------------------------------------
 class FoodSource {
-  constructor(posX, posY, opts, p5s, flower_type) {
+  constructor(posX, posY, opts, p5s, flower_type, _lifespan) {
     this.p5s       = p5s;
     this.opts      = opts;
     this.pos       = this.p5s.createVector(posX, posY);
     this.head_pos  = this.p5s.createVector(posX - 25, posY + 300);
     this.age       = 0;
-    this.life_span = 300;
+    this.life_span = _lifespan;
     this.baby      = true;
     this.died      = false;
     this.gone      = false;
     this.scale     = 200;
-    this.offset    = 10;
+    this.offset    = 5;
 
     this.type       = flower_type;  // 0 = lavender,1 = yellow, or 2 = pink
     this.image;
@@ -287,12 +316,12 @@ class FoodSource {
       //nothing for now
     } else if (this.age < this.life_span*2/3) {
       this.baby = false;
-      this.offset = this.scale*.2
+      this.offset = this.scale*.2 - 20
       this.head_pos.y = this.pos.y - this.scale*.5;
       this.pick_image(this.opts.lav_adult, this.opts.yel_adult, this.opts.pink_adult);
 
     } else if (this.age < this.life_span){
-      this.offset = 10;
+      this.offset = -10;
       this.died = true;
       this.image = this.opts.flower_dead;
 
