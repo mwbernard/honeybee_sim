@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
+
 html {
   scroll-behavior: smooth;
 }
@@ -6,6 +8,8 @@ body {
   padding: 0;
   margin: 0;
   overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1em;
 }
 
 #inner-view-container,
@@ -27,6 +31,30 @@ body {
 
 #entrance-exit-circle:hover {
   cursor: pointer;
+}
+
+div#info-container {
+	position: fixed;
+	top: 50px;
+  width: 100vw;
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#colony-health, #time {
+  color: white;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  padding: 0px 20px;
+}
+
+#colony-health {
+  margin-left: 100px;
+}
+
+#time {
+  margin-right: 100px;
 }
 
 canvas {
