@@ -5,18 +5,34 @@ let innerViewElem = document.getElementById('inner-view-container');
 let innerView = new p5 (( ivs ) => {
 
   ivs.backgroundCols = {
-    morning : ivs.color(159, 181, 222),   // #9FB5DE
-    midday  : ivs.color(127,138,196),     // #7F8AC4
-    night   : ivs.color(87,90,167)        // #575AA7
+    morning : ivs.color(159, 181, 222), // #9FB5DE
+    midday  : ivs.color(127, 138, 196), // #7F8AC4
+    night   : ivs.color(87, 90, 167)    // #575AA7
   }
 
-  ivs.skyColor = "#9FB5DE";
   
+  //-------------------------------------------------------
+  ivs.preload = () => {
+    ivs.queenImg        = ivs.loadImage('../assets/queen.png');
+    ivs.larvaeImg       = ivs.loadImage('../assets/larvae.png');
+    ivs.workerClosedImg = ivs.loadImage('../assets/worker-closed.png');
+    ivs.workerOpenImg   = ivs.loadImage('../assets/worker-open.png');
+  }
+
+
   //-------------------------------------------------------
   ivs.setup = () => {
     ivs.createCanvas(window.innerWidth, window.innerHeight);
-    // ivs.switchTimeColor();
-    ivs.innerHive = new InnerHive(ivs);
+    ivs.switchTimeColor();
+
+    let imgOpts = {
+      queenImg        : ivs.queenImg,
+      larvaeImg       : ivs.larvaeImg,
+      workerClosedImg : ivs.workerClosedImg,
+      workerOpenImg   : ivs.workerOpenImg
+    };
+    
+    ivs.innerHive = new InnerHive(imgOpts, ivs);
   };
 
 
@@ -35,17 +51,18 @@ let innerView = new p5 (( ivs ) => {
 
   //-------------------------------------------------------
   ivs.switchTimeColor = () => {
+    console.log('called')
     if (ivs.hour() <= 6) {
-      ivs.skyColor = "#52447EA";
+      ivs.skyColor = ivs.backgroundCols.night;
     } 
     else if (ivs.hour() < 9) {
-      ivs.skyColor = "#9FB5DE";
+      ivs.skyColor = ivs.backgroundCols.morning;
     } 
     else if (ivs.hour() < 18) {
-      ivs.skyColor = "#7F8AC4";
+      ivs.skyColor = ivs.backgroundCols.midday;
     } 
     else if (ivs.hour() <= 23) {
-      skyColor = "#5247EA";
+      ivs.skyColor = ivs.backgroundCols.night;
     }
   }
   
