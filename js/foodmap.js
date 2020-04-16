@@ -227,7 +227,7 @@ class Hive {
 
         // otherwise give the bee a new target to go to (as if they watched a dance)
         if (this.knownFood[0]) {
-          let rand = this.p5s.int(this.p5s.random(this.knownFood.length - 1));
+          let rand = this.p5s.floor(this.p5s.random(this.knownFood.length));
           bee.setTarget(this.knownFood[rand].x, this.knownFood[rand].y);
         } else {
           bee.clearTarget();
@@ -261,7 +261,7 @@ class FoodSource {
     this.p5s       = p5s;
     this.opts      = opts;
     this.pos       = this.p5s.createVector(posX, posY);
-    this.head_pos  = this.p5s.createVector(posX, posY + 300);
+    this.head_pos  = this.p5s.createVector(posX - 25, posY + 300);
     this.age       = 0;
     this.life_span = 300;
     this.baby      = true;
