@@ -4,6 +4,12 @@ let innerViewElem = document.getElementById('inner-view-container');
 // Inner view p5 sketch instance
 let innerView = new p5 (( ivs ) => {
 
+  ivs.backgroundCols = {
+    morning : ivs.color(159, 181, 222),   // #9FB5DE
+    midday  : ivs.color(127,138,196),     // #7F8AC4
+    night   : ivs.color(87,90,167)        // #575AA7
+  }
+
   ivs.skyColor = "#9FB5DE";
   
   //-------------------------------------------------------
