@@ -17,6 +17,7 @@ let innerView = new p5 (( ivs ) => {
     ivs.larvaeImg       = ivs.loadImage('../assets/larvae.png');
     ivs.workerClosedImg = ivs.loadImage('../assets/worker-closed.png');
     ivs.workerOpenImg   = ivs.loadImage('../assets/worker-open.png');
+    ivs.font            = ivs.loadFont('../assets/fonts/Nunito-Light.ttf');
   }
 
 
@@ -24,6 +25,7 @@ let innerView = new p5 (( ivs ) => {
   ivs.setup = () => {
     ivs.createCanvas(window.innerWidth, window.innerHeight);
     ivs.switchTimeColor();
+    ivs.textFont(ivs.font);
 
     let imgOpts = {
       queenImg        : ivs.queenImg,

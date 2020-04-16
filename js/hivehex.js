@@ -49,6 +49,17 @@ class HiveHex {
       this.p5s.image(this.larvaeImg, 0, 0, 30, 30);
       this.p5s.pop();
     }
+
+    // DEBUG ONLY - show hex array indices 
+    // this.p5s.push();
+    // this.p5s.noStroke();
+    // this.p5s.textSize(16);
+    // this.p5s.fill(0);
+    // this.p5s.translate(this.pos.x, this.pos.y);
+    // this.p5s.textAlign(this.p5s.CENTER, this.p5s.CENTER);
+    // this.p5s.text(this.idx, 0, 0);
+    // this.p5s.pop();
+
   }
 
 
