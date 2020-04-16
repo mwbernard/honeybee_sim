@@ -31,7 +31,7 @@ let innerView = new p5 (( ivs ) => {
       workerClosedImg : ivs.workerClosedImg,
       workerOpenImg   : ivs.workerOpenImg
     };
-    
+
     ivs.innerHive = new InnerHive(imgOpts, ivs);
   };
 
@@ -51,7 +51,6 @@ let innerView = new p5 (( ivs ) => {
 
   //-------------------------------------------------------
   ivs.switchTimeColor = () => {
-    console.log('called')
     if (ivs.hour() <= 6) {
       ivs.skyColor = ivs.backgroundCols.night;
     } 

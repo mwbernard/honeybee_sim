@@ -16,8 +16,10 @@ class InnerHive {
     this.bees      = [];
     this.numLarvae = this.p5s.random(0, 4);
     this.margin    = 175;
+    this.counter   = 0;
 
     this.generateHexGrid();
+    this.spawnLarvae();
     this.createBees();
   }
 
@@ -47,7 +49,7 @@ class InnerHive {
 
   // ------------------------------------------------------
   generateHexGrid() {
-    let counter = 0;
+    
     let yBounds = this.p5s.height + this.s - this.margin;
     let xBounds = (this.p5s.width + this.r) - this.margin - 87.5;
 
@@ -57,14 +59,16 @@ class InnerHive {
         this.hexagons.push(new HiveHex(
           this.p5s.createVector(x, y),
           this.r, 
-          counter++,
+          this.counter++,
+          this.imgs.larvaeImg,
           this.p5s
         ));
 
         this.hexagons.push(new HiveHex(
           this.p5s.createVector(x + 1.5 * this.r, y + this.s), 
           this.r, 
-          counter++,
+          this.counter++,
+          this.imgs.larvaeImg,
           this.p5s
         ));
       }
@@ -75,6 +79,13 @@ class InnerHive {
   // ------------------------------------------------------
   // Pick some random hex cells to fill with larvae
   spawnLarvae() {
+
+    // p5 random actually accepts arrays but it still 
+    // feels intuitive to do it this way 
+    for (let i = 0; i < this.numLarvae; i++) {
+      let idx = Math.round(this.p5s.random(this.counter));
+      this.hexagons[idx].layLarvae();
+    }
 
   }
 
