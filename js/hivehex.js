@@ -26,10 +26,12 @@ class HiveHex {
     if (this.hasLarvae) {
       this.p5s.fill(this.fillColorOptions.larvae);
     } else {
+      // TODO need to determine honey levels
       this.p5s.noFill();
     }
     
     // Create the shape
+    this.p5s.strokeWeight(0.5);
     this.p5s.stroke(255);
     this.p5s.beginShape();
     for (let a = 0; a < 2 * this.p5s.PI; a += 2 * this.p5s.PI / 6) {
