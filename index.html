@@ -10,8 +10,23 @@
   </head>
 
   <body>
-    <div id="inner-view-container"></div>
+    <div id="food-supply-label" class="label">Food Supply</div>
+    <img id="icon-arrow-down" src="./assets/icon-arrow-down.svg">
+    <img id="icon-arrow-up" src="./assets/icon-arrow-up.svg">
+
+
+    <div id="colony-label" class="label">Colony</div>
+
+    <div id="info-container">
+      <div id="colony-health" class="label">
+        <span id="colony-health-label"></span>
+      </div>
+      <div id="time" class="label">
+        <span id="time-label"></span>
+      </div>
+    </div>
     <div id="entrance-exit-circle"></div>
+    <div id="inner-view-container"></div>
     <div id="outer-view-container"></div>
     
     <script src="js/innerbee.js"></script>
@@ -22,30 +37,8 @@
     
     <script src="js/ovsSketch.js"></script>
     <script src="js/ivsSketch.js"></script>
-    
-    <!-- TODO move this to separate file -->
-    <script>
-      let isCurrentViewInside = true;
-      let pageHeight          = window.innerHeight;
-      let entranceExitElem    = document.getElementById('entrance-exit-circle');
-      
-      // always make sure we start at inside view,
-      // even on refresh
-      document.documentElement.scrollTop = 0;
 
-      entranceExitElem.addEventListener('click', ()=> {
-        if (isCurrentViewInside) {
-          // if inside view, scroll to outside view
-          window.scrollBy(0, pageHeight);
-        } else {
-          // if outside view, scroll to inside view
-          document.documentElement.scrollTop = 0;
-        }
-
-        isCurrentViewInside = !isCurrentViewInside;
-      });
-
-    </script>
+    <script src="js/global.js"></script>
   </body>
 
 </html>
