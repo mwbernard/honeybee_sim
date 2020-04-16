@@ -61,14 +61,31 @@ div#info-container {
   position: absolute;
   left: 50%;
 	transform: translateX(-50%);
-	bottom: 100px;
+	bottom: 140px;
 }
 
 #colony-label {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -120px;
+  bottom: -170px;
+}
+
+#icon-arrow-down,
+#icon-arrow-up {
+  position: absolute;
+  width: 100px;
+  height: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#icon-arrow-down {
+  bottom: 40px;
+}
+
+#icon-arrow-up {
+  bottom: -140px;
 }
 
 canvas {
