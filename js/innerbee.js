@@ -8,6 +8,8 @@ class InnerBee {
     this.bounds  = bounds;
     this.beeType = beeType;
     this.rotAmt  = this.p5s.random(this.p5s.PI / 2);
+    this.vel     = this.p5s.createVector(this.p5s.random(2)-1, this.p5s.random(2)-1);
+    this.acc     = this.p5s.createVector(this.p5s.random(2)-1, this.p5s.random(2)-1);
     
     if (this.beeType == 'QUEEN') {
       this.pos = this.p5s.createVector(this.p5s.width / 2, this.p5s.height / 2);
@@ -28,6 +30,25 @@ class InnerBee {
   // ------------------------------------------------------
   update() {
 
+    let rot = this.p5s.random(-0.1, 0.1);
+
+    if (this.beeType == 'QUEEN') {
+      this.p5s.push();
+      this.p5s.translate(this.pos.x, this.pos.y);
+      this.rotAmt += rot;
+      this.p5s.pop();
+    } else {
+      this.explore();
+      this.acc.setMag(.5);
+      this.vel.add(this.acc);
+      this.pos.add(this.vel);
+      this.vel.setMag(0.5);
+      this.p5s.push();
+      this.p5s.translate(this.pos.x, this.pos.y);
+      this.rotAmt += rot;
+      this.p5s.pop();
+    }
+    
   }
 
 
@@ -47,6 +68,11 @@ class InnerBee {
       this.p5s.image(this.imgs.workerClosedImg, 0, 0, 60, 60);
     }
     this.p5s.pop();
+  }
+
+  // ------------------------------------------------------
+  explore() {
+    this.acc = this.p5s.createVector(this.p5s.random(2) - 1, this.p5s.random(2) - 1);
   }
 
 

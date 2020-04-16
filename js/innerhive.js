@@ -12,7 +12,7 @@ class InnerHive {
     this.r         = 40;
     this.s         = this.p5s.sqrt(3 * this.p5s.pow(this.r, 2) / 4);
     this.hexagons  = [];
-    this.beePop    = 20;
+    this.beePop    = 40;
     this.bees      = [];
     this.numLarvae = this.p5s.random(0, 4);
     this.margin    = 175;
