@@ -1,10 +1,34 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 #inner-view-container,
 #outer-view-container {
   width: 100vw;
   height: 100vh;
+}
+
+#entrance-exit-circle {
+  width: 80px;
+	height: 80px;
+	background: white;
+	position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+	border-radius: 50%;
+}
+
+#entrance-exit-circle:hover {
+  cursor: pointer;
+}
+
+canvas {
+  pointer-events: none;
 }
