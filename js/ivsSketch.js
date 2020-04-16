@@ -18,7 +18,6 @@ let innerView = new p5 (( ivs ) => {
   ivs.draw = () => {
     ivs.background(ivs.skyColor);
     ivs.innerHive.display();
-
   }
 
 
