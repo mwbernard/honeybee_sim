@@ -7,19 +7,23 @@ class InnerHive {
 
   // ------------------------------------------------------
   constructor(imgs, p5s) {
-    this.p5s       = p5s;
-    this.imgs      = imgs;
-    this.r         = 40;
-    this.s         = this.p5s.sqrt(3 * this.p5s.pow(this.r, 2) / 4);
-    this.hexagons  = [];
-    this.beePop    = 20;
-    this.bees      = [];
-    this.numLarvae = this.p5s.random(0, 4);
-    this.margin    = 175;
-    this.counter   = 0;
+    this.p5s              = p5s;
+    this.imgs             = imgs;
+    this.r                = 40;
+    this.s                = this.p5s.sqrt(3 * this.p5s.pow(this.r, 2) / 4);
+    this.hexagons         = [];
+    this.beePop           = 20;
+    this.bees             = [];
+    this.numLarvae        = Math.round(this.p5s.random(1, 5));
+    this.numHoneyClusters = Math.round(this.p5s.random(1, 5));
+    this.numCols          = 15;
+    this.numRows          = 6
+    this.margin           = 175;
+    this.counter          = 0;
 
     this.generateHexGrid();
     this.spawnLarvae();
+    this.generateHoneyClusters();
     this.createBees();
   }
 
@@ -49,13 +53,20 @@ class InnerHive {
 
   // ------------------------------------------------------
   generateHexGrid() {
-    
-    let yBounds = this.p5s.height + this.s - this.margin - (this.r * 2);
-    let xBounds = (this.p5s.width + this.r) - this.margin - (this.r * 2);
+  
+    // These are unfortunately arbitrary right now, just
+    // estimating on a roughly 1400 x 900 window size
+    // will figure this out later, but note that neighbor logic
+    // depends on this being static
+
+    let yBounds = 580;
+    let xBounds = 1255;
+
+    // for (let y = 0; y < yBounds; y += 2 * this.s) {
+    //   for (let x = this.margin; x < xBounds; x += 3 * this.r) {
 
     for (let y = this.margin; y < yBounds; y += 2 * this.s) {
       for (let x = this.margin; x < xBounds; x += 3 * this.r) {
-        
         this.hexagons.push(new HiveHex(
           this.p5s.createVector(x, y),
           this.r, 
@@ -73,7 +84,84 @@ class InnerHive {
         ));
       }
     }
+
+    // console.log('numHexagons: ', this.hexagons.length);
   }
+
+  // ------------------------------------------------------
+  generateHoneyClusters() {
+    console.log("numHoneyClusters: ", this.numHoneyClusters);
+    for (let i = 0; i < this.numHoneyClusters; i++) {
+      let idx = Math.round(this.p5s.random(this.counter));
+      this.generateHoneyCluster(idx);
+    }
+  }
+
+
+  // ------------------------------------------------------
+  // Note - neighbor logic depends on generateHexGrid()
+  // This function takes an index, each neighbor (if currently empty) 
+  // gets filled with honey with a 30% or something
+  // then you recurse on the cells that do get filled in
+  generateHoneyCluster(idx) {
+    let allNeighbors = [];
+
+    // neighbors start from top, going clockwise
+    // if index is even
+    if (idx % 2 === 0) {
+      allNeighbors = [
+        idx - 18,
+        idx - 17,
+        idx + 1,
+        idx + 18,
+        idx - 1,
+        idx - 19,
+      ];
+    } 
+    
+    // if index is odd
+    else {
+      allNeighbors = [
+        idx - 18,
+        idx + 1,
+        idx + 19,
+        idx + 18,
+        idx + 17,
+        idx - 1
+      ];
+    }
+
+    // filter for any that are less than 0 (edge cells, can be OOB)
+    let validNeighbors = allNeighbors.filter(n => {
+      return n >= 0 && n <= this.counter;
+    });
+
+    // console.log('idx: ' + idx + ', valid neighbors: ', validNeighbors);
+
+    // pick random amount from valid neighbors to fill with honey
+    let chosenNeighborAmt = Math.round(this.p5s.random(0, validNeighbors.length-1));
+
+    // fill chosen amount from set of neighbors
+    // let neighborsToFill = []; // DEBUG ONLY
+
+    // Fill the selected one first
+    console.log(idx);
+    this.hexagons[idx].fillHoney();
+
+    // Then fill some chosen neighbors
+    for (let i = 0; i < chosenNeighborAmt; i++) {
+      const randInx = Math.round(this.p5s.random(0, validNeighbors.length-1));
+      // neighborsToFill.push(validNeighbors[randInx]);
+      this.hexagons[validNeighbors[randInx]].fillHoney();
+
+      if (randInx > -1) {
+        validNeighbors.splice(randInx, 1);
+      }
+    }
+    
+    // console.log('idx: ' + idx + ', neighborstofill: ' + neighborsToFill);
+  }
+
 
 
   // ------------------------------------------------------
