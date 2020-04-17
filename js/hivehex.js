@@ -15,7 +15,7 @@ class HiveHex {
       starting : this.p5s.color(224, 188, 115), // #E0BC73
       half     : this.p5s.color(219, 175, 80),  // #DBAF50
       full     : this.p5s.color(207, 163, 76),  // #CFA34C
-      larvae   : this.p5s.color(159, 181, 222)  // #9FB5DE
+      larvae   : this.p5s.color(204,215,237)    // #CCD7ED
     };
 
     this.honeyFillCol = this.fillColorOptions.starting;
