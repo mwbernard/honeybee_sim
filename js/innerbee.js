@@ -84,6 +84,10 @@ class InnerBee {
       this.p5s.stroke(0, 0, 255);
       this.p5s.strokeWeight(4);
       this.p5s.circle(this.pos.x, this.pos.y, 60);
+      this.p5s.stroke(194, 209, 250);
+      this.p5s.strokeWeight(2);
+      this.p5s.textSize(15);
+      this.p5s.text(this.beeType, this.pos.x +30, this.pos.y - 30);
       this.display();
     }
   }
