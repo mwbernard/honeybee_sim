@@ -144,7 +144,12 @@ class InnerHive {
     // let neighborsToFill = []; // DEBUG ONLY
 
     // Fill the selected one first
-    this.hexagons[idx].fillHoney();
+    // BANDAID FIX sometimes undefined...
+    if (this.hexagons[idx]) {
+      this.hexagons[idx].fillHoney();
+    } else {
+      console.log('undefined idx? ' + idx);
+    }
 
     // Then fill some chosen neighbors
     for (let i = 0; i < chosenNeighborAmt; i++) {
