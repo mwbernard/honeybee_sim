@@ -1,9 +1,10 @@
 // ------------------------------------------------------
 class InnerBee {
 
-  constructor(bounds, imgs, beeType, p5s) {
+  constructor(bounds, idx, imgs, beeType, p5s) {
 
     this.p5s     = p5s;
+    this.idx     = idx;
     this.imgs    = imgs;
     this.bounds  = bounds;
     this.beeType = beeType;
@@ -11,7 +12,7 @@ class InnerBee {
     this.vel     = this.p5s.createVector(this.p5s.random(2)-1, this.p5s.random(2)-1);
     this.acc     = this.p5s.createVector(this.p5s.random(2)-1, this.p5s.random(2)-1);
     
-    if (this.beeType == 'QUEEN') {
+    if (this.beeType == 'Queen') {
       this.pos = this.p5s.createVector(this.p5s.width / 2, this.p5s.height / 2);
     } else {
       this.pos = this.p5s.createVector(
@@ -32,7 +33,7 @@ class InnerBee {
 
     let rot = this.p5s.random(-0.1, 0.1);
 
-    if (this.beeType == 'QUEEN') {
+    if (this.beeType == 'Queen') {
       this.p5s.push();
       this.p5s.translate(this.pos.x, this.pos.y);
       this.rotAmt += rot;
@@ -60,7 +61,7 @@ class InnerBee {
     this.p5s.noStroke();
     this.p5s.imageMode(this.p5s.CENTER);
 
-    if (this.beeType == 'QUEEN') {
+    if (this.beeType == 'Queen') {
       this.p5s.fill(0, 255, 255);
       this.p5s.image(this.imgs.queenImg, 0, 0, 60, 60);
     } else {
@@ -80,14 +81,30 @@ class InnerBee {
   showTypeLabel() {
     let d = this.p5s.dist(this.p5s.mouseX, this.p5s.mouseY, this.pos.x, this.pos.y);
     if (d < 20) {
-      this.p5s.noFill();
-      this.p5s.stroke(0, 0, 255);
-      this.p5s.strokeWeight(4);
-      this.p5s.circle(this.pos.x, this.pos.y, 60);
-      this.p5s.stroke(194, 209, 250);
-      this.p5s.strokeWeight(2);
+
+      this.p5s.noStroke();
+
+      // Draw the bounding rectangle first
+      this.p5s.fill('rgba(255, 255, 255, 0.35)');
+      this.p5s.rectMode(this.p5s.CENTER);
+      this.p5s.rect(this.pos.x + 60, this.pos.y - 30, 100, 24, 20);
+      
+      // Draw bee type label
+      this.p5s.fill(255, 255, 255);
       this.p5s.textSize(15);
-      this.p5s.text(this.beeType, this.pos.x +30, this.pos.y - 30);
+      this.p5s.textAlign(this.p5s.CENTER, this.p5s.CENTER);
+      
+      if (this.idx == 0) {
+        // Basically only applies to the queen
+        this.p5s.text(this.beeType, this.pos.x + 60, this.pos.y - 32);
+      } else {
+        if (this.idx < 10) {
+          // add leading 0
+          this.p5s.text(this.beeType + ' 0' + this.idx, this.pos.x + 60, this.pos.y - 32);
+        } else {
+          this.p5s.text(this.beeType + ' ' + this.idx, this.pos.x + 60, this.pos.y - 32);
+        }
+      }
       this.display();
     }
   }

@@ -20,11 +20,12 @@ class InnerHive {
     this.numRows          = 6
     this.margin           = 175;
     this.counter          = 0;
+    this.beeCounter       = 1;
 
     this.generateHexGrid();
     this.spawnLarvae();
-    this.generateHoneyClusters();
     this.createBees();
+    this.generateHoneyClusters();
   }
 
   // ------------------------------------------------------
@@ -90,9 +91,9 @@ class InnerHive {
 
   // ------------------------------------------------------
   generateHoneyClusters() {
-    console.log("numHoneyClusters: ", this.numHoneyClusters);
     for (let i = 0; i < this.numHoneyClusters; i++) {
       let idx = Math.round(this.p5s.random(this.counter));
+      // console.log('idx chosen for honey cluster: ' + idx);
       this.generateHoneyCluster(idx);
     }
   }
@@ -136,8 +137,6 @@ class InnerHive {
       return n >= 0 && n <= this.counter;
     });
 
-    // console.log('idx: ' + idx + ', valid neighbors: ', validNeighbors);
-
     // pick random amount from valid neighbors to fill with honey
     let chosenNeighborAmt = Math.round(this.p5s.random(0, validNeighbors.length-1));
 
@@ -145,21 +144,23 @@ class InnerHive {
     // let neighborsToFill = []; // DEBUG ONLY
 
     // Fill the selected one first
-    console.log(idx);
     this.hexagons[idx].fillHoney();
 
     // Then fill some chosen neighbors
     for (let i = 0; i < chosenNeighborAmt; i++) {
       const randInx = Math.round(this.p5s.random(0, validNeighbors.length-1));
       // neighborsToFill.push(validNeighbors[randInx]);
-      this.hexagons[validNeighbors[randInx]].fillHoney();
+      // console.log('randInx is: ' + randInx);
+      
+      // BANDAID FIX for now 
+      if (this.hexagons[validNeighbors[randInx]]) {
+        this.hexagons[validNeighbors[randInx]].fillHoney();
+      }
 
       if (randInx > -1) {
         validNeighbors.splice(randInx, 1);
       }
     }
-    
-    // console.log('idx: ' + idx + ', neighborstofill: ' + neighborsToFill);
   }
 
 
@@ -172,7 +173,12 @@ class InnerHive {
     // feels intuitive to do it this way 
     for (let i = 0; i < this.numLarvae; i++) {
       let idx = Math.round(this.p5s.random(this.counter));
-      this.hexagons[idx].layLarvae();
+
+      // BANDAID FIX for now
+      if (this.hexagons[idx]) {
+        this.hexagons[idx].layLarvae();
+      }
+      
     }
 
   }
@@ -187,11 +193,11 @@ class InnerHive {
     }
 
     // QUEEN FIRST
-    this.bees.push(new InnerBee(bounds, this.imgs, 'QUEEN', this.p5s));
+    this.bees.push(new InnerBee(bounds, 0, this.imgs, 'Queen', this.p5s));
 
     // Worker bees
     for (let i = 0; i < this.beePop; i++) {
-      this.bees.push(new InnerBee(bounds, this.imgs, 'WORKER', this.p5s));
+      this.bees.push(new InnerBee(bounds, this.beeCounter++, this.imgs, 'Worker', this.p5s));
     }
   }
 
