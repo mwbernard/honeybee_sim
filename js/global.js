@@ -8,7 +8,7 @@ var currentTimeElem  = document.getElementById('time-label');
 
 
 setInterval(updateCurrentTime, 1000);
-updateColonyHealth(0.80);
+
 
 
 // ------------------------------------------------------------------
@@ -16,7 +16,7 @@ updateColonyHealth(0.80);
 // Debug only - prob will update colony health from ovsSketch directly
 function updateColonyHealth(amt) {
   let label = amt * 100;
-  colonyHealthElem.innerHTML = `Colony Health: ${ label } / 100`;
+  colonyHealthElem.innerHTML = `Colony Health: ${ label }`;
 }
 
 
@@ -58,5 +58,3 @@ entranceExitElem.addEventListener('click', ()=> {
 
   isCurrentViewInside = !isCurrentViewInside;
 });
-
-
