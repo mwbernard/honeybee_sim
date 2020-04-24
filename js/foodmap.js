@@ -8,6 +8,17 @@ class FoodMap {
     this.width = boundingWidth;
     this.height = boundingHeight;
 
+    this.button1pos = this.p5s.createVector(boundingWidth * .95, boundingHeight * .4);
+    this.button2pos = this.p5s.createVector(boundingWidth * .95, boundingHeight * .5);
+
+    this.sliderpos = this.p5s.createVector(boundingWidth * .05, boundingHeight * .45);
+    this.sliderButtonPos = this.p5s.createVector(boundingWidth * .05, boundingHeight * .45);
+
+    this.sliderVal = 60;
+
+    this.buttonFillCounter1 = 10;
+    this.buttonFillCounter2 = 10;
+
     this.hive = new Hive(
       this.p5s.createVector(0, this.p5s.height - (this.height)),
       this.p5s.createVector(this.width, this.p5s.height),
@@ -26,12 +37,19 @@ class FoodMap {
   update() {
     // update time, temp, gravity stuff here
     this.hive.update();
+
+    this.sliderVal = 70 - this.p5s.floor((this.sliderButtonPos.y - this.sliderpos.y) / 10);
+    //this.sliderVal = 25;
+
+    if (this.buttonFillCounter1 < 10 || this.buttonFillCounter2 < 10) {
+      this.buttonFillCounter1++;
+      this.buttonFillCounter2++;
+    }
   }
 
 
   // ------------------------------------------------------
   display() {
-
     // draw map rect
     this.p5s.rectMode(this.p5s.CORNER);
     this.p5s.rect(0, this.p5s.height - (this.height), this.width, this.height);
@@ -54,6 +72,69 @@ class FoodMap {
     );
 
     this.p5s.rectMode(this.p5s.CENTER);
+
+    this.draw_buttons();
+
+    this.draw_slider();
+
+
+  }
+
+  draw_slider() {
+
+    this.p5s.applyMatrix();
+    this.p5s.fill('rgba(255, 255, 255, 0.35)');
+    this.p5s.rectMode(this.p5s.CENTER);
+    this.p5s.rect(this.sliderpos.x, this.sliderpos.y, 10, 200, 20);
+
+    this.p5s.fill(255);
+    this.p5s.ellipse(this.sliderButtonPos.x, this.sliderButtonPos.y, 10,5);
+
+    this.p5s.text(this.sliderVal + "°", this.sliderpos.x - 10, this.sliderpos.y - 120);
+    this.p5s.noFill();
+    this.p5s.resetMatrix();
+  }
+
+  draw_buttons() {
+    this.p5s.applyMatrix();
+    this.p5s.textSize(15);
+
+    this.p5s.fill('rgba(255, 255, 255, 0.35)');
+    this.p5s.rectMode(this.p5s.CENTER);
+    this.p5s.rect(this.button1pos.x - 95, this.button1pos.y, 120, 24, 20);
+    this.p5s.rect(this.button2pos.x - 110, this.button2pos.y, 150, 24, 20);
+    this.p5s.rectMode(this.p5s.CORNER);
+
+
+    if (this.buttonFillCounter1 < 10) {
+      this.p5s.fill(200);
+    } else {
+      this.p5s.fill(255)
+    }
+    this.p5s.ellipse(this.button1pos.x, this.button1pos.y, 30, 30);
+    if (this.buttonFillCounter2 < 10) {
+      this.p5s.fill(200);
+    } else {
+      this.p5s.fill(255)
+    }
+    this.p5s.ellipse(this.button2pos.x, this.button2pos.y, 30, 30);
+
+    this.p5s.fill(255);
+    this.p5s.text("Add a Flower", this.button1pos.x - 138, this.button1pos.y + 5);
+    this.p5s.text("Add a Pesticide", this.button2pos.x - 160, this.button2pos.y + 5);
+
+    this.p5s.noFill();
+    this.p5s.resetMatrix();
+  }
+
+  pressButton1() {
+    this.hive.addFoodSource();
+    this.buttonFillCounter1 = 0;
+  }
+
+  pressButton2() {
+    this.hive.add_a_pesticide();
+    this.buttonFillCounter2 = 0;
   }
 }
 
@@ -78,10 +159,12 @@ class Hive {
 
     this.knownFood   = [];
     this.foodSources = [];
-    this.pollenLevel = 0;
+    this.pollenLevel = 60;
     this.bees        = [];
     this.beePop      = 20;
+    this.max_bee_pop = 30;
     this.max_food_sources = 10;
+    this.hive_health = 60;
 
     // Instantiate new bee(s)
     // Constrain bee position and movement inside of FoodMap bounding box
@@ -127,6 +210,10 @@ class Hive {
     this.update_food_sources();
     // makes sure hives known food sources actually exist
     this.verify_targets();
+    // update pollen and hive HEALTH
+    this.update_hive_health();
+
+    this.manage_bee_pop();
   }
 
 
@@ -138,11 +225,64 @@ class Hive {
     this.p5s.rectMode(this.p5s.CENTER);
     this.p5s.noStroke();
     this.p5s.translate(this.pos.x, this.pos.y);
-    this.p5s.image(this.opts.hiveImage10, -150, -150, 300, 300);
+    this.p5s.image(this.opts.hiveImage, -250, -200, 500, 400);
+
+    if (this.hive_health > 120) {
+      this.p5s.image(this.opts.honey1,-20,0,50,50);
+    } else if (this.hive_health > 80) {
+      this.p5s.image(this.opts.honey2,-20,0,50,50);
+    } else if (this.hive_health > 40) {
+      this.p5s.image(this.opts.honey3,-20,0,50,50);
+    }
+
     this.p5s.resetMatrix();
 
     this.display_food_sources();
     this.display_bees();
+  }
+
+  add_a_pesticide() {
+
+    let randVal = this.p5s.floor(this.p5s.random(this.foodSources.length));
+
+    if(this.foodSources[randVal].pesticide <= 5) {
+      this.foodSources[randVal].add_pesticide();
+    }
+  }
+
+  manage_bee_pop() {
+
+    let diff = this.max_bee_pop - this.bees.length;
+
+    if (diff > 0) {
+
+      if (this.hive_health > 80) {
+
+        if (this.bees.length < this.beePop) {
+
+          let beeType;
+          if (this.p5s.random(10) < 6) { // how many bees are workers vs drones
+            beeType = 1; // worker
+          } else {
+            beeType = 0; // drone
+          }
+
+          this.bees.push(new Honeybee(
+            this.tl,
+            this.br,
+            this.pos.x,
+            this.pos.y,
+            beeType,
+            this.foodMap,
+            this.opts,
+            this.p5s
+          ));
+        }
+      }
+
+    }
+
+
   }
 
   // ------------------------------------------------------
@@ -162,10 +302,19 @@ class Hive {
 
   // ------------------------------------------------------
   addPollen() {
-    this.pollenLevel += 2;
+    this.pollenLevel += .5;
   }
 
 
+  // ------------------------------------------------------
+  update_hive_health() {
+
+    this.pollenLevel -= .001;
+
+    this.hive_health = this.pollenLevel * (this.max_bee_pop - this.bees.length) / 10;
+
+
+  }
   // ------------------------------------------------------
   verify_targets() {
     if (this.knownFood[0]) {
@@ -202,6 +351,9 @@ class Hive {
       if (a_bee.check_collision(a_food.head_pos.x, a_food.head_pos.y) && a_bee.full != true) {
         a_bee.fillUp();
         a_bee.foundFoodSource = a_food.head_pos;
+        if (this.p5s.random(10) < a_food.pesticide) {
+          a_bee.has_pesticides = true;
+        }
       }
     }
     //if the bees target (which is a flower) does not exist anymore
@@ -235,8 +387,13 @@ class Hive {
 
   // ------------------------------------------------------
   update_bees() {
+
     for (let i = 0; i < this.beePop; i++) {
       let bee = this.bees[i];
+
+      if (bee.dead && bee.pos.y >= this.bottomRightCorner.y) {
+        this.bees.splice(i, 1);
+      }
       // update each bee
       bee.update();
 
@@ -298,6 +455,7 @@ class FoodSource {
     this.gone      = false;
     this.scale     = 200;
     this.offset    = 5;
+    this.label_counter = 40;
 
     this.type       = flower_type;  // 0 = lavender,1 = yellow, or 2 = pink
     this.image;
@@ -310,6 +468,9 @@ class FoodSource {
   // ------------------------------------------------------
   update() {
 
+    if (this.label_counter < 40) {
+      this.label_counter++;
+    }
     this.age+=.01;
 
     if (this.age < this.life_span/3) {
@@ -334,10 +495,16 @@ class FoodSource {
 
   // ------------------------------------------------------
   display() {
+
     this.p5s.applyMatrix();
-    this.p5s.noStroke();
+    //this.p5s.noStroke();
     this.p5s.translate(this.pos.x, this.pos.y);
     this.p5s.image(this.image, this.scale/-2 - this.offset, this.scale/-2 - this.offset, this.scale, this.scale);
+    this.p5s.fill(255)
+    if (this.label_counter < 40) {
+      this.p5s.text("pesticide +1", -45, -180 - this.label_counter);
+    }
+    this.p5s.noFill();
     this.p5s.resetMatrix();
   }
 
@@ -358,5 +525,6 @@ class FoodSource {
   add_pesticide() {
     this.pesticide++;
     this.life_span+=50;
+    this.label_counter = 0;
   }
 }

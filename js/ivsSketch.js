@@ -10,7 +10,7 @@ let innerView = new p5 (( ivs ) => {
     night   : ivs.color(87, 90, 167)    // #575AA7
   }
 
-  
+
   //-------------------------------------------------------
   ivs.preload = () => {
     ivs.queenImg        = ivs.loadImage('../assets/queen.png');
@@ -26,6 +26,7 @@ let innerView = new p5 (( ivs ) => {
     ivs.createCanvas(window.innerWidth, window.innerHeight);
     ivs.switchTimeColor();
     ivs.textFont(ivs.font);
+    updateColonyHealth(0.80);
 
     let imgOpts = {
       queenImg        : ivs.queenImg,
@@ -55,16 +56,16 @@ let innerView = new p5 (( ivs ) => {
   ivs.switchTimeColor = () => {
     if (ivs.hour() <= 6) {
       ivs.skyColor = ivs.backgroundCols.night;
-    } 
+    }
     else if (ivs.hour() < 9) {
       ivs.skyColor = ivs.backgroundCols.morning;
-    } 
+    }
     else if (ivs.hour() < 18) {
       ivs.skyColor = ivs.backgroundCols.midday;
-    } 
+    }
     else if (ivs.hour() <= 23) {
       ivs.skyColor = ivs.backgroundCols.night;
     }
   }
-  
+
 }, innerViewElem);
