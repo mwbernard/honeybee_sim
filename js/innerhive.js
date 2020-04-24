@@ -9,18 +9,20 @@ class InnerHive {
   constructor(imgs, p5s) {
     this.p5s              = p5s;
     this.imgs             = imgs;
-    this.r                = 40;
-    this.s                = this.p5s.sqrt(3 * this.p5s.pow(this.r, 2) / 4);
+
     this.hexagons         = [];
     this.beePop           = 20;
     this.bees             = [];
-    this.numLarvae        = Math.round(this.p5s.random(1, 5));
-    this.numHoneyClusters = Math.round(this.p5s.random(1, 5));
-    this.numCols          = 15;
-    this.numRows          = 6
-    this.margin           = 175;
     this.counter          = 0;
     this.beeCounter       = 1;
+    this.numLarvae        = Math.round(this.p5s.random(1, 5));
+    this.numHoneyClusters = Math.round(this.p5s.random(1, 5));
+
+    this.r                = 40;
+    this.s                = this.p5s.sqrt(3 * this.p5s.pow(this.r, 2) / 4);
+    this.margin           = 175;
+    this.xBounds          = 1260;
+    this.yBounds          = 540;
 
     this.generateHexGrid();
     this.spawnLarvae();
@@ -31,9 +33,10 @@ class InnerHive {
   // ------------------------------------------------------
   display() {
     this.p5s.noFill();
+    this.p5s.push();
+    this.p5s.translate(this.p5s.width/2 - this.xBounds/2, this.margin);
 
     // display hex grid first
-    this.p5s.strokeWeight(1);
     this.hexagons.forEach(h => {
       h.display();
     });
@@ -42,32 +45,21 @@ class InnerHive {
     this.bees.forEach(b => {
       b.update();
       b.display();
+      
+      if (b.contains(this.p5s.mouseX - (this.p5s.width/2 - this.xBounds/2), this.p5s.mouseY - this.margin)) {
+        b.showTypeLabel();
+      }
     });
 
-    // looping again is inefficient so may change this later
-    for (let i = 0; i < this.beePop; i++) {
-      if (this.bees[i].contains(this.p5s.mouseX, this.p5s.mouseY)) {
-        this.bees[i].showTypeLabel();
-      }
-    }
+    this.p5s.pop(); 
   }
+
 
   // ------------------------------------------------------
   generateHexGrid() {
-  
-    // These are unfortunately arbitrary right now, just
-    // estimating on a roughly 1400 x 900 window size
-    // will figure this out later, but note that neighbor logic
-    // depends on this being static
 
-    let yBounds = 580;
-    let xBounds = 1255;
-
-    // for (let y = 0; y < yBounds; y += 2 * this.s) {
-    //   for (let x = this.margin; x < xBounds; x += 3 * this.r) {
-
-    for (let y = this.margin; y < yBounds; y += 2 * this.s) {
-      for (let x = this.margin; x < xBounds; x += 3 * this.r) {
+    for (let y = 0; y < this.yBounds; y += 2 * this.s) {
+      for (let x = 0; x < this.xBounds; x += 3 * this.r) {
         this.hexagons.push(new HiveHex(
           this.p5s.createVector(x, y),
           this.r, 
@@ -85,9 +77,8 @@ class InnerHive {
         ));
       }
     }
-
-    // console.log('numHexagons: ', this.hexagons.length);
   }
+
 
   // ------------------------------------------------------
   generateHoneyClusters() {
@@ -101,9 +92,6 @@ class InnerHive {
 
   // ------------------------------------------------------
   // Note - neighbor logic depends on generateHexGrid()
-  // This function takes an index, each neighbor (if currently empty) 
-  // gets filled with honey with a 30% or something
-  // then you recurse on the cells that do get filled in
   generateHoneyCluster(idx) {
     let allNeighbors = [];
 
@@ -169,7 +157,6 @@ class InnerHive {
   }
 
 
-
   // ------------------------------------------------------
   // Pick some random hex cells to fill with larvae
   spawnLarvae() {
@@ -183,9 +170,7 @@ class InnerHive {
       if (this.hexagons[idx]) {
         this.hexagons[idx].layLarvae();
       }
-      
     }
-
   }
 
 
@@ -193,8 +178,9 @@ class InnerHive {
   createBees() {
 
     let bounds = {
-      xBounds: (this.p5s.width + this.r) - this.margin - (this.r * 2),
-      yBounds:  this.p5s.height + this.s - this.margin,
+      xBounds: this.xBounds,
+      yBounds: this.yBounds,
+      margin: this.margin
     }
 
     // QUEEN FIRST
