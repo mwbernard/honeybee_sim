@@ -13,6 +13,7 @@ let innerView = new p5 (( ivs ) => {
   
   //-------------------------------------------------------
   ivs.preload = () => {
+    ivs.honeyCursor     = ivs.loadImage('../assets/honey-cursor.png');
     ivs.queenImg        = ivs.loadImage('../assets/queen.png');
     ivs.larvaeImg       = ivs.loadImage('../assets/larvae.png');
     ivs.workerClosedImg = ivs.loadImage('../assets/worker-closed.png');
@@ -42,6 +43,7 @@ let innerView = new p5 (( ivs ) => {
   ivs.draw = () => {
     ivs.background(ivs.skyColor);
     ivs.innerHive.display();
+    ivs.image(ivs.honeyCursor, ivs.mouseX - 60, ivs.mouseY - 60, 120, 120);
   }
 
 
