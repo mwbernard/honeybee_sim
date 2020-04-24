@@ -2,9 +2,9 @@
 Honeybee Sim is a project created for Creative Tech 3 at MDP. It was created with [p5.js](p5js.org/).
 
 ## Created by:
-[Martin Bernard](https://mwbernard.com/)
-[Aishwarya Janwadkar](https://aishwaryaj.cargo.site/)
-[Rachel Rose Waterhouse](https://rosewater.cargo.site)
+[Martin Bernard](https://mwbernard.com/)\
+[Aishwarya Janwadkar](https://aishwaryaj.cargo.site/)\
+[Rachel Rose Waterhouse](https://rosewater.cargo.site)\
 [Alana Zhang](http://alanaa.cargo.site/)
 
 
